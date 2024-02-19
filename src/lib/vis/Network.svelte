@@ -55,8 +55,6 @@
     }
   }
 
-  // $: console.log({stageWidth, stageHeight})
-
   $: points = orderBy(
     map(nodes, (d, i) => ({
       ...d,
@@ -71,17 +69,14 @@
     ["selected", "size"],
   );
 
-  $: p = points;
   $: p2 =
     points &&
     points
-      //.sort((a, b) => a.rank - b.rank)
 
   $: pointsById = keyBy(points, "id");
   $: connections = isEmpty(pointsById)
     ? []
     : map(edges, (d, i) => {
-      // console.log({d})
         return {
           ...d,
           source: pointsById[d.source],
@@ -93,12 +88,6 @@
       });
 
   $: c = connections;
-  /*.filter(
-    (a, i) =>
-      p2.find((b) => a.source.id === b.id) &&
-      p2.find((b) => a.target.id === b.id),
-  );*/
-  // $: console.log({ connections });
 </script>
 
 <div class="network h-full w-full absolute bg-black">

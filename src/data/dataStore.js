@@ -127,15 +127,11 @@ export const nodes = readable([], (set) => {
           label_badge,
           attestationIssuedCount: attestationIssuedCount[id] || 0,
           attestationReceivedCount: attestationReceivedCount[id] || 0
-          // data: JSON.stringify(attestation)
         }
       })
 
 
-      const filteredPoints = points//.filter(r => r.id.indexOf('did:pkh:eth:0x126409ed86b1995d8ede6e77bc080c98ec7d4c72') !== -1 
-      //|| r.id.indexOf('did:pkh:eth:0x90f8bf6a479f320ead074411a4b0e7944ea8c9c5') !== -1)
-      // console.log({filteredPoints})
-
+      const filteredPoints = points
       return filteredPoints
     })
     .then((d) => {
@@ -172,8 +168,7 @@ export const edges = readable([], (set) => {
         return acc
       }, {}))
 
-      return uniqueEntities//.filter(r => r.id.indexOf('did:pkh:eth:0x126409ed86b1995d8ede6e77bc080c98ec7d4c72') !== -1 
-      //&& r.id.indexOf('did:pkh:eth:0x90f8bf6a479f320ead074411a4b0e7944ea8c9c5') !== -1)
+      return uniqueEntities
     })
     .then((d) => {
       set(d);

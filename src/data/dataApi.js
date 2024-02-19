@@ -183,14 +183,12 @@ export const edgesDetails = derived(
             !targetNode.selected) ||
           sourceNode.hidden ||
           targetNode.hidden,
-        //hidden: false,
         marked: sourceNode.marked || targetNode.marked,
       };
 
       return edge
     });
 
-    // console.log({filteredEdges: filteredEdges.filter(r => !r.hidden)})
     return filteredEdges
   }
 );
@@ -250,19 +248,6 @@ export const nodesDetails = derived(
         isHidden = true
       }
 
-      /*
-      const hideIncomingNormal = edge ? edge === -1 && !$showInteractionEdges : false
-      const hideOutgoingNormal = edge ? edge === 1 && !$showInteractionEdgesOutgoing : false
-      const hideIncomingReversed = !d.isSnap && (edgeReversed ? edgeReversed === 1 && !$showInteractionEdges : false)
-      const hideOutgoingReversed = !d.isSnap && (edgeReversed ? edgeReversed === -1 && !$showInteractionEdgesOutgoing : false)
-
-      const hideAll = (!$showInteractionEdges && !$showInteractionEdgesOutgoing && $selectedNodeId !== d.id)
-      // || (!edge && !edgeReversed && $selectedNodeId !== d.id && !!selectedNodeId)
-
-      const hideIncoming = hideIncomingNormal && (d.isSnap ? true : hideIncomingReversed)
-      const hideOutgoing = hideOutgoingNormal && (d.isSnap ? true : hideOutgoingReversed)
-      */
-
       return {
         ...d,
         hidden:
@@ -275,7 +260,6 @@ export const nodesDetails = derived(
       };
     });
 
-    // console.log({ filteredNodes: filteredNodes.filter(n => !n.hidden) })
     return filteredNodes
   }
 );
