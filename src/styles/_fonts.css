@@ -1,0 +1,25 @@
+@font-face {
+    font-family:"DM Sans";
+    src:url("../fonts/DMSans-Bold.woff2") format("woff2"),url("../fonts/DMSans-Bold.woff") format("woff"),url("../fonts/DMSans-Bold.otf") format("opentype");
+    font-style:normal;font-weight:700;
+}
+        
+@font-face {
+    font-family:"DM Sans";
+    src:url("../fonts/DMSans-Medium.woff2") format("woff2"),url("../fonts/DMSans-Medium.woff") format("woff"),url("../fonts/DMSans-Medium.otf") format("opentype");
+    font-style:normal;font-weight:500;
+}
+        
+@font-face {
+    font-family:"DM Sans";
+    src:url("../fonts/DMSans-Regular.woff2") format("woff2"),url("../fonts/DMSans-Regular.woff") format("woff"),url("../fonts/DMSans-Regular.otf") format("opentype");
+    font-style:normal;font-weight:400;
+}
+
+
+@font-face {
+    font-family:"Studio";
+    src:url("../fonts/StudioBold.woff2") format("woff2"),url("../fonts/StudioBold.woff") format("woff"),url("../fonts/StudioBold.otf") format("opentype");
+    font-style:normal;font-weight:700;
+}
+        

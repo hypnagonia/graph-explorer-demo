@@ -1,0 +1,111 @@
+[
+    {
+        "@context": [
+            "https://www.w3.org/2018/credentials/v1"
+        ],
+        "credentialSubject": {
+            "id": "snap://0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1",
+            "trustScore": {
+                "confidence": 1,
+                "result": 2,
+                "scope": "SoftwareSecurity",
+                "value": 0
+            },
+            "trustScoreType": "IssuerTrustWeightedAverage"
+        },
+        "id": "0x60feab4d9373f444cfccba7e180185e100c30611c7c389d9c2b65b3a546c0d6f",
+        "issuanceDate": "1970-01-01T01:10:00Z",
+        "issuer": "did:pkh:eip155:1:0x23d86aa31d4198a78baa98e49bb2da52cd15c6f0",
+        "proof": {},
+        "type": [
+            "VerifiableCredential",
+            "TrustScoreCredential"
+        ]
+    },
+    {
+        "@context": [
+            "https://www.w3.org/2018/credentials/v1"
+        ],
+        "credentialSubject": {
+            "id": "snap://0x90f8bf6a479f320ead074411a4b0e7944ea8c9c2",
+            "trustScore": {
+                "confidence": 1,
+                "result": 2,
+                "scope": "SoftwareSecurity",
+                "value": 1
+            },
+            "trustScoreType": "IssuerTrustWeightedAverage"
+        },
+        "id": "0xfdc389be7f12fb7cd3a1a52d249b2ec379e3146104332edeb4a7e1af575a9f60",
+        "issuanceDate": "1970-01-01T01:10:00Z",
+        "issuer": "did:pkh:eip155:1:0x23d86aa31d4198a78baa98e49bb2da52cd15c6f0",
+        "proof": {},
+        "type": [
+            "VerifiableCredential",
+            "TrustScoreCredential"
+        ]
+    },
+    {
+        "@context": [
+            "https://www.w3.org/2018/credentials/v1"
+        ],
+        "credentialSubject": {
+            "id": "did:pkh:eth:0x9a2954b87d8745df0b1010291c51d68ae9269d43",
+            "trustScore": {
+                "scope": "SoftwareSecurity",
+                "value": -1
+            },
+            "trustScoreType": "EigenTrust"
+        },
+        "id": "0x1a9505bd4eb1b58c9a692be320e3d2d9aa1f27d536ced1509308d801da40463a",
+        "issuanceDate": "1970-01-01T01:10:00Z",
+        "issuer": "did:pkh:eip155:1:0x23d86aa31d4198a78baa98e49bb2da52cd15c6f0",
+        "proof": {},
+        "type": [
+            "VerifiableCredential",
+            "TrustScoreCredential"
+        ]
+    },
+    {
+        "@context": [
+            "https://www.w3.org/2018/credentials/v1"
+        ],
+        "credentialSubject": {
+            "id": "did:pkh:eth:0x138aaabbc2ad61f8ea7f2d4155cc7323f26f8775",
+            "trustScore": {
+                "scope": "SoftwareSecurity",
+                "value": 0.4333333969116211
+            },
+            "trustScoreType": "EigenTrust"
+        },
+        "id": "0x78626966a2f7b7cbf620cf481b9754ba5a5d4adefd6892b792e43c2467efd919",
+        "issuanceDate": "1970-01-01T01:10:00Z",
+        "issuer": "did:pkh:eip155:1:0x23d86aa31d4198a78baa98e49bb2da52cd15c6f0",
+        "proof": {},
+        "type": [
+            "VerifiableCredential",
+            "TrustScoreCredential"
+        ]
+    },
+    {
+        "@context": [
+            "https://www.w3.org/2018/credentials/v1"
+        ],
+        "credentialSubject": {
+            "id": "did:pkh:eth:0x651a3c584f4c71b54c50ea73f41b936845ab4fdf",
+            "trustScore": {
+                "scope": "SoftwareSecurity",
+                "value": 0.5666666030883789
+            },
+            "trustScoreType": "EigenTrust"
+        },
+        "id": "0x28ea6b4ad48c0b7827359dfc3eae1504ba33e1492b8363c5a7f72e8e41c20b72",
+        "issuanceDate": "1970-01-01T01:10:00Z",
+        "issuer": "did:pkh:eip155:1:0x23d86aa31d4198a78baa98e49bb2da52cd15c6f0",
+        "proof": {},
+        "type": [
+            "VerifiableCredential",
+            "TrustScoreCredential"
+        ]
+    }
+]
