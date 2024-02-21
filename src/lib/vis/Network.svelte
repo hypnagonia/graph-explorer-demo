@@ -38,6 +38,7 @@
     return {
       label: k == "true" ? "Peers" : "Snaps",
       color: k == "true" ? "yellow" : "lightblue",
+      class: k == "true" ? "rounded-md" : "md",
     };
   });
 
@@ -60,7 +61,7 @@
       ...d,
       x: d.x * (stageWidth + 2000)+ margin.left ,
       y: d.y * (stageHeight + 2000) + margin.top,
-      size: d.score > 0 ? scaleNodeSize(d.score) + 20 : (d.score < 0 ? scaleNodeSize(-d.score) + 20 : scaleNodeSize(0.5) ),
+      size: d.isSnap ? 50 : d.score > 0 ? scaleNodeSize(d.score) + 20 : (d.score < 0 ? scaleNodeSize(-d.score) + 20 : scaleNodeSize(0.5) ),
       // color: theme.colors.scale.nodes[d.curated],
       color: d.isSnap ? (d.score > 0 ? "cyan" : "darkcyan") : (d.score > 0 ? "yellow" : (d.score < 0 ? "purple" : "grey")), 
       borderColor: d.seed ? "#F3FF7A" : "#000",
@@ -104,13 +105,13 @@
   >
     <div>
       <ul class="space-y-2">
-        <li><strong>Circle Size</strong><br /> Score</li>
+        <li><strong>Size</strong><br /> Score</li>
         <li>
-          <strong>Circle Color</strong><br />{#each colorItems as d}
+          <strong>Color</strong><br />{#each colorItems as d}
             <div class="space-x-3">
               <span
                 ><span
-                  class="w-2 h-2 inline-block rounded-md"
+                  class="w-2 h-2 inline-block {d.class}"
                   style="background-color: {d.color}"
                 ></span>
                 {d.label}</span

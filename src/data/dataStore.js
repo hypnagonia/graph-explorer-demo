@@ -37,7 +37,8 @@ const peerLabels = {
 }
 const backendUrl = 'https://mm-api.k3l.io'
 
-const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search)
+
 const snapshotGetParam = params.get('snapshot')
 export let snapshotId = snapshotGetParam
 
@@ -46,8 +47,26 @@ const getSnapshotList = async () => {
   arr.shift()
   return arr
 }
-
 let getSnapshotListPromise = getSnapshotList()
+
+const getSnapMetaData = async () => {
+  const {verifiedSnaps} = await fetch(snapRegistryUrl)
+  .then(r => r.json())
+
+  const names = {}
+  Object.keys(verifiedSnaps).forEach(snapKey => {
+    console.log({verifiedSnaps, snapKey})
+    Object.keys(verifiedSnaps[snapKey].versions).forEach(versionNumber => {
+      const name = verifiedSnaps[snapKey].metadata.name
+      const checksum = verifiedSnaps[snapKey].versions[versionNumber].checksum
+
+      names[checksum] = `${name} v${versionNumber}`
+    })
+  })
+  return names
+}
+let getSnapMetaDataPromise = getSnapMetaData()
+
 
 const getInputData = () => {
   return fetch(`${backendUrl}/files/metamask-input.csv`)
@@ -70,7 +89,8 @@ const getInputCSV = async () => {
   const response = await getInputData()
 
   const run = async () => {
-    const csvData = await response.text();
+    const csvData = await response.text()
+
     if (!snapshotId) {
       const list = await (getSnapshotListPromise || getSnapshotList())
       snapshotId = list[list.length - 1]
@@ -129,6 +149,7 @@ export const nodes = readable([], (set) => {
     .then(async (res) => {
 
       const res2 = await (getInputCSVPromise || getInputCSV())
+      const snapMetaData = await getSnapMetaDataPromise
 
       const entities = {}
       const attestationIssuedCount = {}
@@ -172,9 +193,17 @@ export const nodes = readable([], (set) => {
         let label_badge_id = '' + (attestation ? (attestation.credentialSubject.trustScore.result || '0') : '0')
         let label_badge = isSnap ? snapLabels[label_badge_id] : peerLabels[label_badge_id]
 
+        let label 
+        if (isSnap) {
+          let parsedChecksum = id.split('//').slice(-1)[0]
+          label = snapMetaData[parsedChecksum] || id
+        } else {
+          label = id
+        }
+
         return {
           id,
-          label: id,
+          label,
           score,
           rank,
           isSnap,

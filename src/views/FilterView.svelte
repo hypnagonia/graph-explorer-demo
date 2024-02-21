@@ -48,7 +48,7 @@
     $nodesList.filter(
       (d) =>
         searchProfileLabel.length > 2 &&
-        d.label.toLowerCase().includes(searchProfileLabel.toLowerCase()),
+        d.id.toLowerCase().includes(searchProfileLabel.toLowerCase()) || d.label.toLowerCase().includes(searchProfileLabel.toLowerCase()),
     ),
     "label",
     "asc",
@@ -68,7 +68,7 @@
 <div class="p-6">
   <div class="space-y-2">
     <Search
-      placeholder="Search DID"
+      placeholder="Search a Snap or User"
       bind:value={searchProfileLabel}
       on:input={() => {
         searchActive = true;
@@ -93,7 +93,7 @@
 </div>
 
 <div class="p-6">
-  <h2 class="text-md font-bold | mb-4">Type</h2>
+  <h2 class="text-md font-bold | mb-4">Reputation Graph</h2>
   <div class="space-y-2">
     <Toggle bind:checked={$showSnapNodes}>Snaps</Toggle>
     <Toggle bind:checked={$showAuditorNodes}>Auditors</Toggle>

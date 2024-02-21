@@ -60,7 +60,17 @@
           );
 
           // console.log({node})
-          node_gfx.drawCircle(0, 0, node.size);
+
+          if (node.isSnap) {
+            node_gfx.drawRect(
+              -node.size / 2,
+              -node.size / 2,
+              node.size,
+              node.size,
+            );
+          } else {
+            node_gfx.drawCircle(0, 0, node.size);
+          }
           node_gfx.endFill();
 
           node_gfx.position.set(node.x, node.y);
@@ -187,9 +197,8 @@
             edge.target.x - edge.source.x,
           );
           let arrowLength = 50;
-
-          let targetX = edge.target.x - edge.target.size * Math.cos(angle);
-          let targetY = edge.target.y - edge.target.size * Math.sin(angle);
+          let targetX = edge.target.x - edge.target.size / 2 * Math.cos(angle);
+          let targetY = edge.target.y - edge.target.size / 2 * Math.sin(angle)
 
           drawArrowhead(
             edges_container,
