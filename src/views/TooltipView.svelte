@@ -19,7 +19,7 @@
         <div class="py-2 px-4 text-gray-500 text-sm">
           <table>
             <tr>
-              <td class="pr-4"><strong>Label</strong></td>
+              <td class="pr-4"><strong>Status</strong></td>
               <td>{$hoveredNodeDetails.label_badge}</td>
             </tr>
             {#if $hoveredNodeDetails.isSnap === true}
@@ -31,11 +31,11 @@
             {#if $hoveredNodeDetails.isSnap === false}
               <tr>
                 <td class="pr-4"><strong>Rank</strong></td>
-                <td>#1</td>
+                <td>{$hoveredNodeDetails.rank}</td>
               </tr>
               <tr>
                 <td class="pr-4"><strong>Accuracy</strong></td>
-                <td>1</td>
+                <td>{($hoveredNodeDetails.accuracy * 100).toFixed(0)}%</td>
               </tr>
             {/if}
             <tr>

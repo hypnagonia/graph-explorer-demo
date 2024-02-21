@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { snapLabels } from '../data/dataStore';
 // nodes
 export const hoveredNodeId = writable('');
 export const selectedNodeId = writable('');
@@ -25,3 +26,5 @@ export const showDeveloperNodes = writable(true);
 export const showAuditorNodes = writable(true);
 
 export const snapshotTimestamps = writable(['']);
+
+export const snapLabelFilters = writable(Object.values(snapLabels).map(label => ({label, value: true})))

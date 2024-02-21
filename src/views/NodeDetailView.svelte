@@ -93,6 +93,10 @@
           <tr>
             <td class="pr-4" colspan="2"> </td>
           </tr>
+          <tr>
+            <td class="pr-4">Status</td>
+            <td>{$selectedNodeDetails.label_badge}</td>
+          </tr>
           {#if $selectedNodeDetails.isSnap === true}
             <tr>
               <td class="pr-4">Confidence</td>
@@ -110,7 +114,7 @@
           {#if $selectedNodeDetails.isSnap === false}
             <tr>
               <td class="pr-4">Rank</td>
-              <td>#1</td>
+              <td>{$selectedNodeDetails.rank}</td>
             </tr>
             <tr>
               <td class="pr-4">Score</td>
@@ -118,7 +122,7 @@
             </tr>
             <tr>
               <td class="pr-4">Accuracy</td>
-              <td>1</td>
+              <td>{($selectedNodeDetails.accuracy * 100).toFixed(0)}%</td>
             </tr>
 
             <tr>

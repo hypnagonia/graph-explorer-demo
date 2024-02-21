@@ -22,7 +22,8 @@ import {
   showUserNodes,
   showDeveloperNodes,
   showAuditorNodes,
-  showInteractionEdgesOutgoing
+  showInteractionEdgesOutgoing,
+  snapLabelFilters
 } from '../state/uiState.js';
 
 //////////////
@@ -93,7 +94,8 @@ export const nodesFiltered = derived(
     showUserNodes,
     showDeveloperNodes,
     showAuditorNodes,
-    showInteractionEdgesOutgoing
+    showInteractionEdgesOutgoing,
+    snapLabelFilters
   ],
   ([
     $nodes,
@@ -114,7 +116,8 @@ export const nodesFiltered = derived(
     $showUserNodes,
     $showDeveloperNodes,
     $showAuditorNodes,
-    $showInteractionEdgesOutgoing
+    $showInteractionEdgesOutgoing,
+    $snapLabelFilters
   ]) => {
     if ($nodes.length === 0) {
       return [];
@@ -122,6 +125,7 @@ export const nodesFiltered = derived(
 
     const nodesHaveSelection = $selectedNodeId !== '';
     const nodesAreSearched = $searchedNodeLabel !== '';
+    const labelsFiltered = $snapLabelFilters.filter(r => !r.value).map(r => r.label)
 
     return map($nodes, (d) => {
       const isIncluded =
@@ -130,10 +134,14 @@ export const nodesFiltered = derived(
         isIn(d.curated_degree_in, $minNodeDegreeIn, $maxNodeDegreeIn) &&
         isIn(d.curated_degree_out, $minNodeDegreeOut, $maxNodeDegreeOut);
 
+      const isLabelFiltered = d.isSnap 
+      ? labelsFiltered.includes(d.label_badge)
+      : false   
       return {
         ...d,
         selected: nodesHaveSelection && $selectedNodeId === d.id,
         hidden:
+          isLabelFiltered ||
           (!$showSnapNodes && d.isSnap) ||
           (!$showAuditorNodes && !d.isSnap) ||
           (nodesAreSearched &&

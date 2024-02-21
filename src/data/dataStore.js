@@ -24,13 +24,13 @@ const changeChainIdTo1 = did => {
   return a.join(':')
 }
 
-const snapLabels = {
+export const snapLabels = {
   '0': 'Insufficient Reviews',
   '1': 'Endorsed',
   '2': 'In Review',
   '3': 'Reported'
 }
-const peerLabels = {
+export const peerLabels = {
   '-1': 'Distrusted',
   '0': '-',
   '1': 'Highly Trusted',
@@ -90,8 +90,6 @@ const getSocialData = async () => {
 
   return socials
 }
-
-getSocialData()
 
 const getInputData = () => {
   return fetch(`${backendUrl}/files/metamask-input.csv`)
@@ -214,9 +212,11 @@ export const nodes = readable([], (set) => {
 
         let id = attestation ? attestation.credentialSubject.id : o;
         let score = attestation ? (attestation.credentialSubject.trustScore.value) : 0
-        let rank = attestation ? (attestation.credentialSubject.trustScore.confidence || 0) : 0
+        let rank = attestation ? (attestation.credentialSubject.trustScore.rank || '-') : '-'
+        
+        let accuracy = attestation ? (attestation.credentialSubject.trustScore.accuracy || 1) : 1
         let isSnap = id.indexOf('snap') !== -1
-
+        
         let label_badge_id = '' + (attestation ? (attestation.credentialSubject.trustScore.result || '0') : '0')
         let label_badge = isSnap ? snapLabels[label_badge_id] : peerLabels[label_badge_id]
 
@@ -234,6 +234,7 @@ export const nodes = readable([], (set) => {
           label,
           score,
           rank,
+          accuracy,
           isSnap,
           seed: 10000,
           curated: true,

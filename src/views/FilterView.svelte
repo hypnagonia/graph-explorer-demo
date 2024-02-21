@@ -19,6 +19,7 @@
     showDeveloperNodes,
     showAuditorNodes,
     snapshotTimestamps,
+    snapLabelFilters
   } from "../state/uiState";
   import {
     nodesList,
@@ -35,7 +36,13 @@
   import { orderBy } from "lodash-es";
 
   // import VirtualList from 'svelte-virtual-list-ce';
-  import { Toggle, Search, Dropdown, DropdownItem, Button } from "flowbite-svelte";
+  import {
+    Toggle,
+    Search,
+    Dropdown,
+    DropdownItem,
+    Button,
+  } from "flowbite-svelte";
   import SliderWithStats from "../lib/ui/SliderWithStats.svelte";
 
   const scoreFormat = format(".6f");
@@ -47,8 +54,9 @@
   $: filteredItems = orderBy(
     $nodesList.filter(
       (d) =>
-        searchProfileLabel.length > 2 &&
-        d.id.toLowerCase().includes(searchProfileLabel.toLowerCase()) || d.label.toLowerCase().includes(searchProfileLabel.toLowerCase()),
+        (searchProfileLabel.length > 2 &&
+          d.id.toLowerCase().includes(searchProfileLabel.toLowerCase())) ||
+        d.label.toLowerCase().includes(searchProfileLabel.toLowerCase()),
     ),
     "label",
     "asc",
@@ -57,12 +65,9 @@
   function toIsoString(snapshot) {
     const date = new Date(+snapshot);
     const isoString = date.toISOString();
-    return isoString.split(".000Z")[0].replace('T', ' ');
+    return isoString.split(".000Z")[0].replace("T", " ");
   }
 
-  function handleSelect(option) {
-    selectedOption = option;
-  }
 </script>
 
 <div class="p-6">
@@ -93,9 +98,18 @@
 </div>
 
 <div class="p-6">
-  <h2 class="text-md font-bold | mb-4">Reputation Graph</h2>
+  <h2 class="text-md font-bold | mb-4">Snaps</h2>
   <div class="space-y-2">
-    <Toggle bind:checked={$showSnapNodes}>Snaps</Toggle>
+    <Toggle bind:checked={$showSnapNodes}>All</Toggle>
+    {#each $snapLabelFilters as s}
+    <Toggle bind:checked={s.value}>{s.label}</Toggle>
+  {/each}
+  </div>
+</div>
+
+<div class="p-6">
+  <h2 class="text-md font-bold | mb-4">Peers</h2>
+  <div class="space-y-2">
     <Toggle bind:checked={$showAuditorNodes}>Auditors</Toggle>
     <Toggle bind:checked={$showDeveloperNodes}>Developers</Toggle>
   </div>
@@ -173,11 +187,14 @@
 {/if}
 <div class="p-6">
   <div>
-    <Button>Snapshots</Button>
+    
+    <div class="cursor-pointer font-bold">
+      Snapshots ({$snapshots.length})
+    </div>
     <Dropdown class="w-64 overflow-y-auto py-4 h-48">
       {#each $snapshots as s}
         <DropdownItem
-          class={s === snapshotId ? 'bg-blue-500' : ''}
+          class={s === snapshotId ? "bg-blue-500" : ""}
           on:click={() => {
             window.location.href =
               window.location.href.split("?")[0] + "?snapshot=" + s;
@@ -186,5 +203,14 @@
       {/each}
     </Dropdown>
   </div>
-  <div class="flex"></div>
+  <div class="flex">
+    
+  </div>
+
+  <div class="fixed bottom-0 right-0 m-4">
+    <!-- Your content here -->
+    <p class="bg-white p-4 rounded-lg">Snapshot {
+     toIsoString(snapshotId)
+    }
+  </div>
 </div>
