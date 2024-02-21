@@ -62,16 +62,12 @@
       y: d.y * (stageHeight + 2000) + margin.top,
       size: d.score > 0 ? scaleNodeSize(d.score) + 20 : (d.score < 0 ? scaleNodeSize(-d.score) + 20 : scaleNodeSize(0.5) ),
       // color: theme.colors.scale.nodes[d.curated],
-      color: d.isSnap ? (d.score > 0 ? "cyan" : "grey") : (d.score > 0 ? "yellow" : (d.score < 0 ? "purple" : "grey")), 
+      color: d.isSnap ? (d.score > 0 ? "cyan" : "darkcyan") : (d.score > 0 ? "yellow" : (d.score < 0 ? "purple" : "grey")), 
       borderColor: d.seed ? "#F3FF7A" : "#000",
       seed: d.seed,
     })),
     ["selected", "size"],
   );
-
-  $: p2 =
-    points &&
-    points
 
   $: pointsById = keyBy(points, "id");
   $: connections = isEmpty(pointsById)
@@ -82,7 +78,8 @@
           source: pointsById[d.source],
           target: pointsById[d.target],
           size: d.size || (d.weight > 0 ? scaleLinkSize(d.weight) / 16 : scaleLinkSize(-d.weight) / 16),
-          color: d.color || (d.weight > 0 ? "#00e040" : "#e00040"), // theme.colors.scale.edge,
+          color: d.color 
+          || (d.weight > 0 ? "#00e040" : (d.weight < 0 ? "#e00040" : 'grey')), // theme.colors.scale.edge,
           opacity: 1, // scaleLinkOpacity(d.weight),
         };
       });
@@ -93,7 +90,7 @@
 <div class="network h-full w-full absolute bg-black">
   <PixiApp>
     <PixiNetwork
-      nodes={p2}
+      nodes={points}
       edges={c}
       width={stageWidth}
       height={stageHeight}

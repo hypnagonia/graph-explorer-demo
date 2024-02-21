@@ -12,6 +12,8 @@
 
   const app = getContext("pixiApp");
   const dispatch = createEventDispatcher();
+  const angleAdjustment = Math.PI / 12;
+
   let stage;
   let renderer;
 
@@ -112,7 +114,7 @@
 
           // selected node
           if (node.selected) {
-            return
+            return;
             let node_border = new PIXI.Graphics();
             node_border.lineStyle(1, "#fff", 0.5);
             node_border.beginFill("transparent");
@@ -149,11 +151,33 @@
       // init
       if (edges_container.children.length === 0) {
         edges.forEach((edge) => {
-          
           let edge_gfx = new PIXI.Graphics();
-          edge_gfx.lineStyle(edge.size, edge.color, edge.opacity);
+          const color = edge.color;
+          console.log(
+            edge.bidirectional,
+            !edge.source.hidden,
+            !edge.target.hidden,
+          );
+          edge_gfx.lineStyle(edge.size, color, edge.opacity);
+
+          /*
+          console.log(edge.bidirectional, edge.source.hidden, edge.target.hidden)
+          if (edge.bidirectional === "Tf" || edge.bidirectional === "Ft" && !edge.source.hidden && !edge.target.hidden) {
+            edge_gfx.moveTo(edge.source.x, edge.source.y);
+            edge_gfx.lineTo(
+              (edge.source.x + edge.target.x) / 2,
+              (edge.source.y + edge.target.y) / 2,
+            );
+          } else if (edge.bidirectional  && !edge.source.hidden && !edge.target.hidden) {
+            edge_gfx.moveTo(
+              (edge.source.x + edge.target.x) / 2,
+              (edge.source.y + edge.target.y) / 2,
+            );
+            edge_gfx.lineTo(edge.target.x, edge.target.y);
+          } else {*/
           edge_gfx.moveTo(edge.source.x, edge.source.y);
           edge_gfx.lineTo(edge.target.x, edge.target.y);
+
           edge_gfx.id = edge.id;
           edge_gfx.alpha = 0;
           edges_container.addChild(edge_gfx);
@@ -174,7 +198,7 @@
             targetY,
             angle + Math.PI,
             arrowLength,
-            edge.color,
+            color,
             edge.opacity,
           );
 
@@ -188,37 +212,32 @@
             color,
             opacity,
           ) {
-            
             let arrow = new PIXI.Graphics();
             arrow.id = id;
             arrow.lineStyle(edge.size * 1.5, color, opacity);
             arrow.moveTo(x, y);
             arrow.lineTo(
-              x + length * Math.cos(angle - Math.PI / 12),
-              y + length * Math.sin(angle - Math.PI / 12),
+              x + length * Math.cos(angle - angleAdjustment),
+              y + length * Math.sin(angle - angleAdjustment),
             );
             arrow.moveTo(x, y);
             arrow.lineTo(
-              x + length * Math.cos(angle + Math.PI / 12),
-              y + length * Math.sin(angle + Math.PI / 12),
+              x + length * Math.cos(angle + angleAdjustment),
+              y + length * Math.sin(angle + angleAdjustment),
             );
             edges_container.addChild(arrow);
           }
         });
-        
+
         edgesInitial = true;
       }
 
       // update
       if (!isEmpty(edgesById) && edges_container.children.length > 0) {
-
-        // console.log('-----')  
         forEach(edges_container.children, (edge_gfx) => {
           const edge = edgesById[edge_gfx.id];
-          // console.log('edge',{edge})  
-          
+
           if (edge.hidden) {
-            
             edge_gfx.alpha = 0;
             edge_gfx.tint = 0xffffff;
           } else if (edge.marked) {

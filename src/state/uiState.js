@@ -24,4 +24,4 @@ export const showUserNodes = writable(true);
 export const showDeveloperNodes = writable(true);
 export const showAuditorNodes = writable(true);
 
-export const snapshotTimestamps = writable(['Genesis', '1706281200000']);
+export const snapshotTimestamps = writable(['']);

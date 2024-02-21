@@ -1,8 +1,7 @@
 import { derived } from 'svelte/store';
 import { isEmpty, map, keyBy, forEach, filter, orderBy } from 'lodash-es';
 import { extent } from 'd3';
-
-import { nodes, edges } from './dataStore.js';
+import { nodes, edges, snapshotsAvailable } from './dataStore.js';
 import {
   hoveredNodeId,
   selectedNodeId,
@@ -28,6 +27,16 @@ import {
 
 //////////////
 // stats
+
+
+export const snapshots = derived([snapshotsAvailable], ([$snapshotsAvailable]) => {
+  if ($snapshotsAvailable.length === 0) {
+    return [];
+  }
+  console.log({ $snapshotsAvailable })
+  return $snapshotsAvailable
+});
+
 
 export const nodesScoreDomain = derived([nodes], ([$nodes]) => {
   if ($nodes.length === 0) {
@@ -172,7 +181,6 @@ export const edgesDetails = derived(
 
       const hideIncoming = nodesHaveSelection ? $selectedNodeId === targetNode.id && !$showInteractionEdges : false
       const hideOutgoing = nodesHaveSelection ? $selectedNodeId === sourceNode.id && !$showInteractionEdgesOutgoing : false
-
       const edge = {
         ...d,
         hidden:
@@ -183,6 +191,7 @@ export const edgesDetails = derived(
             !targetNode.selected) ||
           sourceNode.hidden ||
           targetNode.hidden,
+          // d.weight === 0,
         marked: sourceNode.marked || targetNode.marked,
       };
 
@@ -193,32 +202,47 @@ export const edgesDetails = derived(
   }
 );
 
-export const edgesDetailsById = derived([edgesDetails], ([$edgesDetails]) => {
-  if ($edgesDetails.length === 0) {
-    return {};
-  }
-
-  const output = {};
-
-  const addToDict = (d, k1, k2, v = 'f', node) => {
-    if (d[k1] === undefined) {
-      d[k1] = {};
+export const edgesDetailsById = derived([edgesDetails, showInteractionEdges, showInteractionEdgesOutgoing],
+  ([$edgesDetails, $showInteractionEdges, $showInteractionEdgesOutgoing]) => {
+    if ($edgesDetails.length === 0) {
+      return {};
     }
-    if (d[k1][k2]) {
-       d[k1][k2] = d[k1][k2] + v
-       node.size = 1.2
-     } else {
-      d[k1][k2] = v
-     } 
-  }
 
-  forEach($edgesDetails, (d) => {
-    addToDict(output, d.source, d.target, 't', d)
-    addToDict(output, d.target, d.source, 'f', d)
+    const output = {};
+
+    const addToDict = (d, k1, k2, v = 'f', edge) => {
+      if (d[k1] === undefined) {
+        d[k1] = {};
+      }
+
+      if (d[k1][k2]) {
+        if (
+          (
+            d[k1][k2] === 't' && v === 'F'
+            || d[k1][k2] === 'T' && v === 'f'
+            || d[k1][k2] === 'f' && v === 'T'
+            || d[k1][k2] === 'F' && v === 't'
+          )
+        ) {
+          edge.bidirectional = d[k1][k2] + v
+        } else {
+          // edge.bidirectional = null
+        }
+        
+        d[k1][k2] = d[k1][k2] + v
+        edge.size = 1.2
+      } else {
+        d[k1][k2] = v
+      }
+    }
+
+    forEach($edgesDetails, (d) => {
+      addToDict(output, d.source, d.target, d.weight > 0 ? 'T' : 't', d)
+      addToDict(output, d.target, d.source, d.weight > 0 ? 'F' : 'f', d)
+    });
+
+    return output;
   });
-
-  return output;
-});
 
 //////////////
 // nodes
@@ -240,9 +264,9 @@ export const nodesDetails = derived(
 
       if (!edge && $selectedNodeId && !isSelected) {
         isHidden = true
-      } else if (!isSelected && edge && edge.indexOf('f') === -1 && !$showInteractionEdgesOutgoing) {
+      } else if (!isSelected && edge && (edge.indexOf('f') === -1 && edge.indexOf('F') === -1) && !$showInteractionEdgesOutgoing) {
         isHidden = true
-      } else if (!isSelected && edge && edge.indexOf('t') === -1 && !$showInteractionEdges) {
+      } else if (!isSelected && edge && (edge.indexOf('t') === -1 && edge.indexOf('T') === -1) && !$showInteractionEdges) {
         isHidden = true
       } else if (!isSelected && !$showInteractionEdgesOutgoing && !$showInteractionEdges) {
         isHidden = true

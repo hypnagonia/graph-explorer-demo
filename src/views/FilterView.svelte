@@ -27,13 +27,15 @@
     nodesAgeDomain,
     nodesDegreeInDomain,
     nodesDegreeOutDomain,
+    snapshots,
   } from "../data/dataApi.js";
+  import { snapshotId } from "../data/dataStore";
 
   import { format } from "d3";
   import { orderBy } from "lodash-es";
 
   // import VirtualList from 'svelte-virtual-list-ce';
-  import { Toggle, Search, Dropdown, DropdownItem } from "flowbite-svelte";
+  import { Toggle, Search, Dropdown, DropdownItem, Button } from "flowbite-svelte";
   import SliderWithStats from "../lib/ui/SliderWithStats.svelte";
 
   const scoreFormat = format(".6f");
@@ -51,6 +53,16 @@
     "label",
     "asc",
   );
+
+  function toIsoString(snapshot) {
+    const date = new Date(+snapshot);
+    const isoString = date.toISOString();
+    return isoString.split(".")[0];
+  }
+
+  function handleSelect(option) {
+    selectedOption = option;
+  }
 </script>
 
 <div class="p-6">
@@ -90,9 +102,8 @@
 </div>
 
 {#if isReady && false}
-<div class="p-6-a">
-  <div>
-  
+  <div class="p-6-a">
+    <div>
       <h2 class="text-md font-bold | mb-2">Filters</h2>
 
       <SliderWithStats
@@ -127,51 +138,53 @@
         step={1}
       />
 
+      {#if isReady && false}
+        <div class="flex flex-row my-4 justify-center items-center">
+          <span class="text-sm pr-3">Mark</span>
+          <Toggle bind:checked={$nodesFilterMode} /><span class="text-sm"
+            >Filter</span
+          >
+        </div>
+      {/if}
+    </div>
+
     {#if isReady && false}
-      <div class="flex flex-row my-4 justify-center items-center">
-        <span class="text-sm pr-3">Mark</span>
-        <Toggle bind:checked={$nodesFilterMode} /><span class="text-sm"
-          >Filter</span
+      <h2 class="text-md font-bold | my-4">Profiles</h2>
+      <div class="space-y-2">
+        <Toggle outline bind:checked={$showCuratedNodes}
+          >Curated Profiles</Toggle
+        >
+        <Toggle bind:checked={$showInteractionNodes}
+          >Interacting Profiles</Toggle
         >
       </div>
     {/if}
   </div>
-
-  {#if isReady && false}
-    <h2 class="text-md font-bold | my-4">Profiles</h2>
-    <div class="space-y-2">
-      <Toggle outline bind:checked={$showCuratedNodes}>Curated Profiles</Toggle>
-      <Toggle bind:checked={$showInteractionNodes}>Interacting Profiles</Toggle>
-    </div>
-    {/if}
-</div>
 {/if}
 
 {#if false}
-<div class="p-6">
-  
+  <div class="p-6">
     <h2 class="text-md font-bold | mb-4">Engagements</h2>
     <div class="space-y-2">
       <Toggle bind:checked={$showInteractionEdges}>Incoming</Toggle>
       <Toggle bind:checked={$showInteractionEdgesOutgoing}>Outgoing</Toggle>
     </div>
-  
-</div>
+  </div>
 {/if}
 <div class="p-6">
-  <h2 class="text-md font-bold | mb-4">Snapshot</h2>
-  <div class="flex">
-    {#each $snapshotTimestamps as s}
-      <div class="inline-block mr-2">
-        <div
-          class="cursor-pointer inline-block px-2 py-1 rounded-full bg-blue-500 text-white text-sm font-semibold"
+  <div>
+    <Button>Snapshots</Button>
+    <Dropdown class="w-64 overflow-y-auto py-4 h-48">
+      {#each $snapshots as s}
+        <DropdownItem
+          class={s === snapshotId ? 'bg-blue-500' : ''}
           on:click={() => {
-            window.location.href = window.location.href.split('?')[0] + '?snapshot=' + s
-          }}
+            window.location.href =
+              window.location.href.split("?")[0] + "?snapshot=" + s;
+          }}>{toIsoString(s)}</DropdownItem
         >
-          {s}
-        </div>
-      </div>
-    {/each}
+      {/each}
+    </Dropdown>
   </div>
+  <div class="flex"></div>
 </div>

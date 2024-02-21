@@ -73,7 +73,7 @@
   <main class="min-h-screen flex flex-col h-screen">
     <div class="header | p-4 bg-gray-800">
       <h1 class=" text-white font-serif flex flex-row">
-        <Logo /> <span class="text-gray-500 pl-2 tracking-wider">EXPLORER</span>
+        <Logo /> <span class="text-gray-500 pl-2 tracking-wider">EXPLORER (WORK IN PROGRESS)</span>
       </h1>
     </div>
     <div class="flex flex-row flex-1 overflow-auto">
