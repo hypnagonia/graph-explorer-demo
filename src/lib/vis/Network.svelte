@@ -63,13 +63,14 @@
       y: d.y * (stageHeight + 2000) + margin.top,
       size: d.isSnap ? 50 : d.score > 0 ? scaleNodeSize(d.score) + 20 : (d.score < 0 ? scaleNodeSize(-d.score) + 20 : scaleNodeSize(0.5) ),
       // color: theme.colors.scale.nodes[d.curated],
-      color: d.isSnap ? (d.score > 0 ? "cyan" : "darkcyan") : (d.score > 0 ? "yellow" : (d.score < 0 ? "purple" : "grey")), 
+      color: d.isSnap ? (d.score > 0 ? "#55FFFF" : "#00AAAA") : (d.score > 0 ? "#FFFF55" : (d.score < 0 ? "#AA00AA" : "grey")), 
       borderColor: d.seed ? "#F3FF7A" : "#000",
       seed: d.seed,
     })),
     ["selected", "size"],
   );
-
+  
+  // ega pallete https://moddingwiki.shikadi.net/wiki/EGA_Palette
   $: pointsById = keyBy(points, "id");
   $: connections = isEmpty(pointsById)
     ? []
@@ -78,9 +79,9 @@
           ...d,
           source: pointsById[d.source],
           target: pointsById[d.target],
-          size: d.size || (d.weight > 0 ? scaleLinkSize(d.weight) / 16 : scaleLinkSize(-d.weight) / 16),
+          size: Math.max(d.size || (d.weight > 0 ? scaleLinkSize(d.weight) / 16 : scaleLinkSize(-d.weight) / 16), 2),
           color: d.color 
-          || (d.weight > 0 ? "#00e040" : (d.weight < 0 ? "#e00040" : 'grey')), // theme.colors.scale.edge,
+          || (d.weight > 0 ? "#30ee60" : (d.weight < 0 ? "#ee3060" : 'grey')), // theme.colors.scale.edge,
           opacity: 1, // scaleLinkOpacity(d.weight),
         };
       });

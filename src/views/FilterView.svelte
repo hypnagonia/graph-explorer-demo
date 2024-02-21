@@ -57,7 +57,7 @@
   function toIsoString(snapshot) {
     const date = new Date(+snapshot);
     const isoString = date.toISOString();
-    return isoString.split(".")[0];
+    return isoString.split(".000Z")[0].replace('T', ' ');
   }
 
   function handleSelect(option) {

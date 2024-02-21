@@ -45,17 +45,26 @@ export let snapshotId = snapshotGetParam
 const getSnapshotList = async () => {
   const arr = await fetch(`${backendUrl}/api/scores`).then(r => r.json())
   arr.shift()
-  return arr
+  return arr.filter((a, i) => {
+    if (!arr[i - 1]) {
+      return true
+    }
+    const diff = +arr[i] - +arr[i - 1]
+    if (diff === 1) {
+      return false
+    }
+
+    return true
+  })
 }
 let getSnapshotListPromise = getSnapshotList()
 
 const getSnapMetaData = async () => {
-  const {verifiedSnaps} = await fetch(snapRegistryUrl)
-  .then(r => r.json())
+  const { verifiedSnaps } = await fetch(snapRegistryUrl)
+    .then(r => r.json())
 
   const names = {}
   Object.keys(verifiedSnaps).forEach(snapKey => {
-    console.log({verifiedSnaps, snapKey})
     Object.keys(verifiedSnaps[snapKey].versions).forEach(versionNumber => {
       const name = verifiedSnaps[snapKey].metadata.name
       const checksum = verifiedSnaps[snapKey].versions[versionNumber].checksum
@@ -67,6 +76,22 @@ const getSnapMetaData = async () => {
 }
 let getSnapMetaDataPromise = getSnapMetaData()
 
+const getSocialData = async () => {
+  const res = await fetch(`${backendUrl}/files/social-db.csv`).then(r => r.text())
+
+  const socials = Papa.parse(res, {
+    header: false,
+    delimiter: ";",
+  }).data.reduce((o, e) => {
+    console.log({e})
+    o[e[0]] = e[1]
+    return o
+  }, {})
+
+  return socials
+}
+
+getSocialData()
 
 const getInputData = () => {
   return fetch(`${backendUrl}/files/metamask-input.csv`)
@@ -149,6 +174,8 @@ export const nodes = readable([], (set) => {
     .then(async (res) => {
 
       const res2 = await (getInputCSVPromise || getInputCSV())
+
+      const socials = await getSocialData()
       const snapMetaData = await getSnapMetaDataPromise
 
       const entities = {}
@@ -193,12 +220,13 @@ export const nodes = readable([], (set) => {
         let label_badge_id = '' + (attestation ? (attestation.credentialSubject.trustScore.result || '0') : '0')
         let label_badge = isSnap ? snapLabels[label_badge_id] : peerLabels[label_badge_id]
 
-        let label 
+        let label
         if (isSnap) {
           let parsedChecksum = id.split('//').slice(-1)[0]
           label = snapMetaData[parsedChecksum] || id
         } else {
-          label = id
+          let parsedAddress = id.split(':').at(-1)
+          label = socials[parsedAddress] || id
         }
 
         return {

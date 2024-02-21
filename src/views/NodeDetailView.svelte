@@ -67,7 +67,7 @@
           class="font-bold text-sm"
           style="word-break:break-all;max-width:300px;font-size:20px;"
         >
-          {$selectedNodeDetails.isSnap ? $selectedNodeDetails.label : "Peer"}
+          {$selectedNodeDetails.isSnap ? $selectedNodeDetails.label : $selectedNodeDetails.label}
         </div>
         <Button
           pill

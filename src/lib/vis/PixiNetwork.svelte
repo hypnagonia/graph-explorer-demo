@@ -59,8 +59,6 @@
             0.5,
           );
 
-          // console.log({node})
-
           if (node.isSnap) {
             node_gfx.drawRect(
               -node.size / 2,
@@ -163,11 +161,11 @@
         edges.forEach((edge) => {
           let edge_gfx = new PIXI.Graphics();
           const color = edge.color;
-          console.log(
+          /*console.log(
             edge.bidirectional,
             !edge.source.hidden,
             !edge.target.hidden,
-          );
+          );*/
           edge_gfx.lineStyle(edge.size, color, edge.opacity);
 
           /*
