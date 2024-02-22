@@ -111,7 +111,7 @@
         </div>
       </div>
       <div
-        class="flex flex-col flex-1 overflow-auto | basis-3/12 h-full | border-l border-l-gray-800"
+        class="flex flex-col flex-1 overflow-auto | basis-3/12 h-full | border-l border-l-gray-800 bg-white"
       >
         {#if $selectedNodeId == ''}
           <FilterView />

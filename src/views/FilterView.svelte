@@ -19,7 +19,7 @@
     showDeveloperNodes,
     showAuditorNodes,
     snapshotTimestamps,
-    snapLabelFilters
+    snapLabelFilters,
   } from "../state/uiState";
   import {
     nodesList,
@@ -62,12 +62,11 @@
     "asc",
   );
 
-  function toIsoString(snapshot) {
+  function toLocaleString(snapshot) {
     const date = new Date(+snapshot);
-    const isoString = date.toISOString();
-    return isoString.split(".000Z")[0].replace("T", " ");
+    const localString = date.toLocaleString();
+    return localString;
   }
-
 </script>
 
 <div class="p-6">
@@ -102,8 +101,8 @@
   <div class="space-y-2">
     <Toggle bind:checked={$showSnapNodes}>All</Toggle>
     {#each $snapLabelFilters as s}
-    <Toggle bind:checked={s.value}>{s.label}</Toggle>
-  {/each}
+      <Toggle bind:checked={s.value}>{s.label}</Toggle>
+    {/each}
   </div>
 </div>
 
@@ -161,33 +160,11 @@
         </div>
       {/if}
     </div>
-
-    {#if isReady && false}
-      <h2 class="text-md font-bold | my-4">Profiles</h2>
-      <div class="space-y-2">
-        <Toggle outline bind:checked={$showCuratedNodes}
-          >Curated Profiles</Toggle
-        >
-        <Toggle bind:checked={$showInteractionNodes}
-          >Interacting Profiles</Toggle
-        >
-      </div>
-    {/if}
   </div>
 {/if}
 
-{#if false}
-  <div class="p-6">
-    <h2 class="text-md font-bold | mb-4">Engagements</h2>
-    <div class="space-y-2">
-      <Toggle bind:checked={$showInteractionEdges}>Incoming</Toggle>
-      <Toggle bind:checked={$showInteractionEdgesOutgoing}>Outgoing</Toggle>
-    </div>
-  </div>
-{/if}
 <div class="p-6">
   <div>
-    
     <div class="cursor-pointer font-bold">
       Snapshots ({$snapshots.length})
     </div>
@@ -198,19 +175,17 @@
           on:click={() => {
             window.location.href =
               window.location.href.split("?")[0] + "?snapshot=" + s;
-          }}>{toIsoString(s)}</DropdownItem
+          }}>{toLocaleString(s)}</DropdownItem
         >
       {/each}
     </Dropdown>
   </div>
-  <div class="flex">
-    
-  </div>
+  <div class="flex"></div>
 
   <div class="fixed bottom-0 right-0 m-4">
     <!-- Your content here -->
-    <p class="bg-white p-4 rounded-lg">Snapshot {
-     toIsoString(snapshotId)
-    }
+    <p class="bg-white p-4 rounded-lg">
+      Snapshot {toLocaleString(snapshotId)}
+    </p>
   </div>
 </div>

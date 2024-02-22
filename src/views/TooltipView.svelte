@@ -25,7 +25,7 @@
             {#if $hoveredNodeDetails.isSnap === true}
               <tr>
                 <td class="pr-4"><strong>Confidence</strong></td>
-                <td>{$hoveredNodeDetails.rank}</td>
+                <td>{$hoveredNodeDetails.confidence}</td>
               </tr>
             {/if}
             {#if $hoveredNodeDetails.isSnap === false}

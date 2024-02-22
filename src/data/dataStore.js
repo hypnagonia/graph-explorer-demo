@@ -1,10 +1,8 @@
 import { readable } from 'svelte/store';
-import { csv } from 'd3-fetch';
 import Papa from 'papaparse'
 import seedrandom from 'seedrandom';
 import { ethers } from 'ethers'
 const snapRegistryUrl = 'https://raw.githubusercontent.com/MetaMask/snaps-registry/main/src/registry.json'
-
 const random = seedrandom('hello3')
 
 const changeChainIdTo1 = did => {
@@ -36,9 +34,7 @@ export const peerLabels = {
   '1': 'Highly Trusted',
 }
 const backendUrl = 'https://mm-api.k3l.io'
-
 const params = new URLSearchParams(window.location.search)
-
 const snapshotGetParam = params.get('snapshot')
 export let snapshotId = snapshotGetParam
 
@@ -131,8 +127,6 @@ const getInputCSV = async () => {
       .filter(o => !!o.id)
       .map(o => {
         const schema_value = JSON.parse(o.schema_value)
-        // const issuer = schema_value.issuer
-        // const attestee = schema_value.credentialSubject.id
         schema_value.issuer = changeChainIdTo1(schema_value.issuer)
         schema_value.credentialSubject.id = changeChainIdTo1(schema_value.credentialSubject.id)
         return schema_value
@@ -154,9 +148,7 @@ const getRecords = async () => {
       return false
     }
   }).filter(e => e)
-  // const peersRaw = await fetch(peersPath).then(r => r.text())
   const peers = peersRaw.split('\n').map(e => {
-
     try {
       return JSON.parse(e)
     } catch (err) {
@@ -169,9 +161,8 @@ const getRecords = async () => {
 
 export const nodes = readable([], (set) => {
   getRecords()
-    .then(async (res) => {
-
-      const res2 = await (getInputCSVPromise || getInputCSV())
+    .then(async (scores) => {
+      const inputs = await (getInputCSVPromise || getInputCSV())
 
       const socials = await getSocialData()
       const snapMetaData = await getSnapMetaDataPromise
@@ -188,7 +179,7 @@ export const nodes = readable([], (set) => {
         }
       }
 
-      res2.forEach(e => {
+      inputs.forEach(e => {
         e.issuer = changeChainIdTo1(e.issuer)
         e.credentialSubject.id = changeChainIdTo1(e.credentialSubject.id)
         entities[e.credentialSubject.id] = e
@@ -198,7 +189,7 @@ export const nodes = readable([], (set) => {
         updateCount(attestationIssuedCount, e.issuer)
       })
 
-      res.forEach(e => {
+      scores.forEach(e => {
         e.issuer = changeChainIdTo1(e.issuer)
         e.credentialSubject.id = changeChainIdTo1(e.credentialSubject.id)
         entities[e.credentialSubject.id] = e
@@ -219,10 +210,11 @@ export const nodes = readable([], (set) => {
         
         let label_badge_id = '' + (attestation ? (attestation.credentialSubject.trustScore.result || '0') : '0')
         let label_badge = isSnap ? snapLabels[label_badge_id] : peerLabels[label_badge_id]
+        let confidence = (attestation ? (attestation.credentialSubject.trustScore.confidence || '-') : '-')
 
         let label
         if (isSnap) {
-          let parsedChecksum = id.split('//').slice(-1)[0]
+          let parsedChecksum = id.split('//').at(-1)
           label = snapMetaData[parsedChecksum] || id
         } else {
           let parsedAddress = id.split(':').at(-1)
@@ -234,6 +226,7 @@ export const nodes = readable([], (set) => {
           label,
           score,
           rank,
+          confidence,
           accuracy,
           isSnap,
           seed: 10000,
@@ -250,10 +243,7 @@ export const nodes = readable([], (set) => {
         }
       })
 
-
-      const filteredPoints = points
-
-      return filteredPoints
+      return points
     })
     .then((d) => {
       set(d);
@@ -268,11 +258,11 @@ export const snapshotsAvailable = readable([], (set) => {
 
 export const edges = readable([], (set) => {
   getRecords()
-    .then(async (res) => {
+    .then(async (scores) => {
 
-      const res2 = await (getInputCSVPromise || getInputCSV())
+      const inputs = await (getInputCSVPromise || getInputCSV())
 
-      const entities = res2.map(e => {
+      const entities = inputs.map(e => {
         let target = e.credentialSubject.id
         let source = e.issuer
         let id = `${source}-${target}`
@@ -282,6 +272,7 @@ export const edges = readable([], (set) => {
           : 0
 
         let currentStatus = e.credentialSubject.currentStatus ? (e.credentialSubject.currentStatus === 'Endorsed' ? 1 : -1) : 0
+        // todo peers
         let weight = currentStatus // trustworthiness > 0 ? 1 : trustworthiness < 0 ? -1 : 0
 
         return {
@@ -303,4 +294,3 @@ export const edges = readable([], (set) => {
       set(d);
     });
 });
-// 153;2024-02-20T17:12:36.238Z;{"type":["VerifiableCredential","TrustCredential"],"proof":{"type":"EthereumEip712Signature2021","eip712":{"types":{"Proof":[{"name":"created","type":"string"},{"name":"proofPurpose","type":"string"},{"name":"type","type":"string"},{"name":"verificationMethod","type":"string"}],"EIP712Domain":[{"name":"name","type":"string"},{"name":"version","type":"string"},{"name":"chainId","type":"uint256"}],"Trustworthiness":[{"name":"scope","type":"string"},{"name":"level","type":"int8"},{"name":"reason","type":"string[]"}],"CredentialSubject":[{"name":"id","type":"string"},{"name":"trustworthiness","type":"Trustworthiness[]"}],"VerifiableCredential":[{"name":"@context","type":"string[]"},{"name":"type","type":"string[]"},{"name":"issuer","type":"string"},{"name":"credentialSubject","type":"CredentialSubject"},{"name":"issuanceDate","type":"string"},{"name":"proof","type":"Proof"}]},"domain":{"name":"VerifiableCredential","chainId":59144,"version":"1"},"primaryType":"VerifiableCredential"},"created":"2024-02-20T17:12:35.682Z","proofValue":"0x8ca2b20d700495abcd48076cd4f652bd62a240b4600843d7251ec7132aa65ace698b7bb731a977cdd20cb1e95b497b85d2ec933677d8445e4a72f3cb1d5eb0dd1b","proofPurpose":"assertionMethod","verificationMethod":"did:pkh:eip155:59144:0x6eCfD8252C19aC2Bf4bd1cBdc026C001C93E179D#blockchainAccountId"},"issuer":"did:pkh:eip155:59144:0x6eCfD8252C19aC2Bf4bd1cBdc026C001C93E179D","@context":["https://www.w3.org/2018/credentials/v2"],"issuanceDate":"2024-02-20T17:12:32.840Z","credentialSubject":{"id":"did:pkh:eip155:59144:0xc5fd29cC1a1b76ba52873fF943FEDFDD36cF46C6","trustworthiness":[{"level":0,"scope":"Software development","reason":[]},{"level":0,"scope":"Software security","reason":[]}]}}

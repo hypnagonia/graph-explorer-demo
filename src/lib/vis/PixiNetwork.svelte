@@ -161,11 +161,7 @@
         edges.forEach((edge) => {
           let edge_gfx = new PIXI.Graphics();
           const color = edge.color;
-          /*console.log(
-            edge.bidirectional,
-            !edge.source.hidden,
-            !edge.target.hidden,
-          );*/
+
           edge_gfx.lineStyle(edge.size, color, edge.opacity);
 
           /*
@@ -195,8 +191,12 @@
             edge.target.x - edge.source.x,
           );
           let arrowLength = 50;
-          let targetX = edge.target.x - edge.target.size / 2 * Math.cos(angle);
-          let targetY = edge.target.y - edge.target.size / 2 * Math.sin(angle)
+
+          let size = edge.target.size + (edge.target.isSnap ? 0 : 30)
+          let targetX =
+            edge.target.x - (size / 2) * Math.cos(angle);
+          let targetY =
+            edge.target.y - (size / 2) * Math.sin(angle);
 
           drawArrowhead(
             edges_container,

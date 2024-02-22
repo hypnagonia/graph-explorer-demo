@@ -183,7 +183,6 @@ export const edgesDetails = derived(
     const nodesHaveSelection = $selectedNodeId !== '';
 
     const filteredEdges = map($edges, (d) => {
-      // console.log({ d })
       const sourceNode = $nodesFilteredById[d.source];
       const targetNode = $nodesFilteredById[d.target];
 
@@ -251,9 +250,6 @@ export const edgesDetailsById = derived([edgesDetails, showInteractionEdges, sho
 
     return output;
   });
-
-//////////////
-// nodes
 
 export const nodesDetails = derived(
   [nodesFiltered, selectedNodeId, edgesDetailsById, showInteractionEdges, showInteractionEdgesOutgoing],

@@ -62,7 +62,6 @@
 
       if (d.isSnap) {
         size = 50;
-        // if socials make dot bigger
       } else if (d.label.indexOf("did") !== 0) {
         size = 30;
       } else {
