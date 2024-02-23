@@ -79,7 +79,6 @@ const getSocialData = async () => {
     header: false,
     delimiter: ";",
   }).data.reduce((o, e) => {
-    console.log({e})
     o[e[0]] = e[1]
     return o
   }, {})

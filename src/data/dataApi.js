@@ -34,7 +34,6 @@ export const snapshots = derived([snapshotsAvailable], ([$snapshotsAvailable]) =
   if ($snapshotsAvailable.length === 0) {
     return [];
   }
-  console.log({ $snapshotsAvailable })
   return $snapshotsAvailable
 });
 

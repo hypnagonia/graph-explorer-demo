@@ -180,7 +180,6 @@
       {/each}
     </Dropdown>
   </div>
-  <div class="flex"></div>
 
   <div class="fixed bottom-0 right-0 m-4">
     <!-- Your content here -->

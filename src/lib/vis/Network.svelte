@@ -27,7 +27,8 @@
   let pointsWithHighlights = [];
   let theme = getContext("theme");
 
-  const margin = { top: 30, right: 30, bottom: 30, left: 30 };
+  //const margin = { top: 30, right: 30, bottom: 50, left: 200 };
+  const margin = { top: 30, right: 30, bottom: 50, left: 200 };
 
   const maxNodeSize = 20;
   const scaleLinkSize = scaleSqrt();
@@ -61,22 +62,22 @@
       let size;
 
       if (d.isSnap) {
-        size = 50;
+        size = 20;
       } else if (d.label.indexOf("did") !== 0) {
-        size = 30;
+        size = 10;
       } else {
-        size =
-          d.score > 0
-            ? scaleNodeSize(d.score) + 20
+        size = Math.min(
+          (d.score > 0
+            ? scaleNodeSize(d.score) 
             : d.score < 0
-              ? scaleNodeSize(-d.score) + 20
-              : scaleNodeSize(0.5);
+              ? scaleNodeSize(-d.score) 
+              : scaleNodeSize(0.5)), 10)
       }
 
       return {
         ...d,
-        x: d.x * (stageWidth + 2000) + margin.left,
-        y: d.y * (stageHeight + 2000) + margin.top,
+        x: d.x * (stageWidth - margin.left - margin.right ) + margin.left,
+        y: d.y * (stageHeight - margin.top - margin.bottom) + margin.top,
         size,
         // color: theme.colors.scale.nodes[d.curated],
         color: d.isSnap
@@ -107,9 +108,9 @@
           size: Math.max(
             d.size ||
               (d.weight > 0
-                ? scaleLinkSize(d.weight) / 16
-                : scaleLinkSize(-d.weight) / 16),
-            2,
+                ? scaleLinkSize(d.weight) / 12
+                : scaleLinkSize(-d.weight) / 12),
+            1,
           ),
           color:
             d.color ||
@@ -138,9 +139,15 @@
   >
     <div>
       <ul class="space-y-2">
+        {#if false}
         <li><strong>Size</strong><br /> Score</li>
+
+        {/if}
         <li>
-          <strong>Color</strong><br />{#each colorItems as d}
+          {#if false}
+          <strong>Color</strong><br />
+          {/if}
+          {#each colorItems as d}
             <div class="space-x-3">
               <span
                 ><span
@@ -152,7 +159,9 @@
             </div>
           {/each}
         </li>
+        {#if false}
         <li><strong>Line Color</strong><br /> Target node type</li>
+        {/if}
       </ul>
     </div>
   </div>

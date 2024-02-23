@@ -13,17 +13,16 @@
     $app = new PIXI.Application({
       background: '#000',
       backgroundAlpha: 1,
-      resizeTo: parent,
-      autoDensity: true,
-      antialias: true,
-      resolution: 2,
+      // resizeTo: parent,
+      autoDensity: false,
+      antialias: false,
+      resolution: 1,
       view: container,
       autoStart: false,
     });
   });
 </script>
-
-<div class="w-full h-full" bind:this="{parent}">
+<div class="w-full h-full" bind:this={parent}>
   <canvas bind:this="{container}"></canvas>
   <slot />
 </div>

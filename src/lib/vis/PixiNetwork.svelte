@@ -32,8 +32,11 @@
     if ($app) {
       stage = $app.stage;
       renderer = $app.renderer;
+      // renderer.resize(width, height);
       renderer.resize(width, height);
-
+      console.log({width, height})
+      // {width: 499, height: 738}
+      
       let nodesInitial = false;
       let edgesInitial = false;
 
@@ -44,7 +47,7 @@
       if (nodes_container.children.length === 0) {
         const nodeSizeDomain = extent(nodes, (node) => node.size);
         const nodeStrokeMin = Math.min(nodeSizeDomain[0] / 5, 0.5);
-        const nodeStrokeMax = Math.min(nodeSizeDomain[1] / 20, 2);
+        const nodeStrokeMax = Math.min(nodeSizeDomain[1] / 20, 0.5);
         nodeStrokeScale
           .domain(nodeSizeDomain)
           .range([nodeStrokeMin, nodeStrokeMax]);
@@ -88,12 +91,14 @@
           node_gfx.id = node.id;
           nodes_container.addChild(node_gfx);
 
+          /*
           let node_bg = new PIXI.Graphics();
           node_bg.beginFill("rgba(255,255,255,0.2)");
-          node_bg.drawCircle(node.x, node.y, node.size * 1.15);
+          node_bg.drawCircle(node.x, node.y, node.size );
           node_bg.endFill();
           node_bg.id = node.id;
           nodesbg_container.addChild(node_bg);
+          */
         });
 
         nodesInitial = true;
@@ -190,9 +195,9 @@
             edge.target.y - edge.source.y,
             edge.target.x - edge.source.x,
           );
-          let arrowLength = 50;
+          let arrowLength = 20;
 
-          let size = edge.target.size + (edge.target.isSnap ? 0 : 30)
+          let size = edge.target.size + (edge.target.isSnap ? 10 : 10)
           let targetX =
             edge.target.x - (size / 2) * Math.cos(angle);
           let targetY =
@@ -266,15 +271,18 @@
         );
       }
 
-      let scale =
+      let scale = 1 ||
         Math.min(
           width / nodes_container.width,
           height / nodes_container.height,
-        ) - 0.5; // magical number
+        ); // magical number
 
       stage.scale.set(scale, scale);
-      stage.x = (width - nodes_container.width * scale) / 2;
-      stage.y = (height - nodes_container.height * scale) / 2;
+  //      stage.x = ((width - nodes_container.width) * scale) / 1;
+   //   stage.y = ((height - nodes_container.height) * scale) / 1;
+      stage.x =  0;
+      stage.y =  0;
+      console.log('--', width, nodes_container.width, height, nodes_container.height)
 
       $app.render();
     }
