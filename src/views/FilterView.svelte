@@ -173,5 +173,10 @@
         >
       {/each}
     </Dropdown>
+    <div class="cursor-pointer font-bold">
+      <br/>
+      <a href="https://dune.com/karma3-labs/metamask-snaps-attestations-and-trust-scores" target="_blank">Dune Dashboard &#8599;</a>
+    </div>
+   
   </div>
 </div>

@@ -48,8 +48,8 @@
   $: nodeExtent = extent(nodes, (d) => d.score);
   $: linkExtent = extent(edges, (d) => d.weight);
 
-  $: stageWidth = width //- margin.left - margin.right;
-  $: stageHeight = height //- margin.top - margin.bottom;
+  $: stageWidth = width / 2//- margin.left - margin.right;
+  $: stageHeight = height / 2//- margin.top - margin.bottom;
 
   $: {
     if (nodes.length !== 0 && edges.length !== 0) {
@@ -64,9 +64,9 @@
       let size;
 
       if (d.isSnap) {
-        size = 20;
-      } else if (d.label.indexOf("did") !== 0) {
         size = 10;
+      } else if (d.label.indexOf("did") !== 0) {
+        size = 5;
       } else {
         size = Math.min(
           d.score > 0
@@ -74,7 +74,7 @@
             : d.score < 0
               ? scaleNodeSize(-d.score)
               : scaleNodeSize(0.5),
-          10,
+          5,
         );
       }
 
@@ -112,9 +112,9 @@
           size: Math.max(
             d.size ||
               (d.weight > 0
-                ? scaleLinkSize(d.weight) / 12
-                : scaleLinkSize(-d.weight) / 12),
-            1,
+                ? scaleLinkSize(d.weight) / 24
+                : scaleLinkSize(-d.weight) / 24),
+            0.5,
           ),
           color:
             d.color ||

@@ -57,7 +57,7 @@
 
           node_gfx.beginFill(node.color);
           node_gfx.lineStyle(
-            nodeStrokeScale(node.size) * node.seed ? 4 : 0.5,
+            nodeStrokeScale(node.size) * node.seed ? 1 : 0.5,
             node.borderColor,
             0.5,
           );
@@ -195,9 +195,9 @@
             edge.target.y - edge.source.y,
             edge.target.x - edge.source.x,
           );
-          let arrowLength = 20;
+          let arrowLength = 10;
 
-          let size = edge.target.size + (edge.target.isSnap ? 10 : 10);
+          let size = edge.target.size + (edge.target.isSnap ? 5 : 5);
           let targetX = edge.target.x - (size / 2) * Math.cos(angle);
           let targetY = edge.target.y - (size / 2) * Math.sin(angle);
 
@@ -224,7 +224,7 @@
           ) {
             let arrow = new PIXI.Graphics();
             arrow.id = id;
-            arrow.lineStyle(edge.size * 1.5, color, opacity);
+            arrow.lineStyle(edge.size * 1, color, opacity);
             arrow.moveTo(x, y);
             arrow.lineTo(
               x + length * Math.cos(angle - angleAdjustment),

@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { snapLabels } from '../data/dataStore';
+import { snapLabels, isMobile } from '../data/dataStore';
 // nodes
 export const hoveredNodeId = writable('');
 export const selectedNodeId = writable('');
@@ -27,4 +27,28 @@ export const showAuditorNodes = writable(true);
 
 export const snapshotTimestamps = writable(['']);
 
-export const snapLabelFilters = writable(Object.values(snapLabels).map(label => ({label, value: true})))
+export const snapLabelFilters = writable(Object.values(snapLabels).map(label => ({ label, value: true })))
+
+const resizeWindow = () => {
+    const { subscribe, set } = writable({
+        x: 0,
+        y: 0,
+    })
+
+    window.addEventListener('resize', (e) => {
+        set({
+            x: window.innerWidth,
+            y: window.innerHeight,
+        });
+    })
+
+    return {
+        subscribe,
+    }
+
+}
+
+export const resize = resizeWindow()
+
+
+export const isMenuVisible = writable(false);

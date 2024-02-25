@@ -13,10 +13,10 @@
     $app = new PIXI.Application({
       background: '#000',
       backgroundAlpha: 1,
-      // resizeTo: parent,
+      resizeTo: parent,
       autoDensity: false,
-      antialias: false,
-      resolution: 1,
+      antialias: true,
+      resolution: 2,
       view: container,
       autoStart: false,
     });

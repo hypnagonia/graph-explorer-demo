@@ -29,10 +29,12 @@
   import FilterView from "./views/FilterView.svelte";
   import TooltipView from "./views/TooltipView.svelte";
   import NodeDetailView from "./views/NodeDetailView.svelte";
-  import { Toggle } from 'flowbite-svelte';
-  import { AdjustmentsHorizontalOutline } from 'flowbite-svelte-icons'
+  import { Toggle } from "flowbite-svelte";
+  import { AdjustmentsHorizontalOutline } from "flowbite-svelte-icons";
+  import { CloseCircleSolid } from "flowbite-svelte-icons";
   import { isMobile, snapshotId } from "./data/dataStore";
   import { toLocaleString } from "./utils/format";
+  import { isMenuVisible } from "./state/uiState.js";
 
   let width, height;
 
@@ -77,23 +79,33 @@
   <main class="min-h-screen flex flex-col h-screen">
     <div class="header | p-4 bg-gray-800">
       <h1 class=" text-white font-serif flex flex-row" style="">
-        <Logo />
-        <div>
-          <span class="text-gray-500 pl-2 tracking-wider">EXPLORER</span><span
-            class="text-gray-700 pl-2">WIP</span
-          >
+        <div style="margin-top:-1px;">
+          <a href="https://karma3labs.com/" target="_blank">
+            <Logo />
+          </a>
         </div>
-      
+        <div></div>
+
         {#if isMobile}
-        <div style="margin-left: auto;">
-          <AdjustmentsHorizontalOutline class="cursor-pointer"/>
-        </div>
+          <div style="margin-left: auto;">
+            {#if $isMenuVisible}
+            <CloseCircleSolid
+              class="cursor-pointer"
+              on:click={() => ($isMenuVisible = !$isMenuVisible)}
+            />
+            {/if}
+            {#if !$isMenuVisible}
+            <AdjustmentsHorizontalOutline
+              class="cursor-pointer"
+              on:click={() => ($isMenuVisible = !$isMenuVisible)}
+            />
+            {/if}
+          </div>
         {/if}
       </h1>
-      
     </div>
-    <div class="flex flex-row flex-1 overflow-auto container">
-      <div class="{(!isMobile ? 'basis-9/12' : 'w-full') + ' h-full'}">
+    <div class="flex flex-row flex-1 overflow-auto">
+      <div class={(!isMobile ? "basis-9/12" : "w-full") + " h-full"}>
         <div class="stage" bind:clientWidth={width} bind:clientHeight={height}>
           <div class="stage__wrapper">
             <Network
@@ -122,14 +134,16 @@
           </div>
         </div>
       </div>
-      {#if !isMobile}
-      <div
-        class="flex flex-col flex-1 overflow-auto | basis-3/12 h-full | border-l border-l-gray-800 bg-white"
-      >
-        {#if $selectedNodeId == ""}
-          <FilterView />
-        {:else}<NodeDetailView />{/if}
-      </div>
+      {#if !isMobile || $isMenuVisible}
+        <div
+          class={!isMobile
+            ? "flex flex-col flex-1 overflow-auto | basis-3/12 h-full | border-l border-l-gray-800 bg-white"
+            : "fixed flex flex-col flex-1 overflow-auto | w-full h-full | border-l border-l-gray-800 bg-white"}
+        >
+          {#if $selectedNodeId == ""}
+            <FilterView />
+          {:else}<NodeDetailView />{/if}
+        </div>
       {/if}
     </div>
 
@@ -155,5 +169,4 @@
     width: 100%;
     height: 100%;
   }
-
 </style>
