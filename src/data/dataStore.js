@@ -3,7 +3,10 @@ import Papa from 'papaparse'
 import seedrandom from 'seedrandom';
 import { ethers } from 'ethers'
 const snapRegistryUrl = 'https://raw.githubusercontent.com/MetaMask/snaps-registry/main/src/registry.json'
-const random = seedrandom('hello3')
+
+const seed = 'hello'
+const random = seedrandom(seed)
+const randomWithParam = id => seedrandom(seed + id)
 
 const changeChainIdTo1 = did => {
   if (did.indexOf('snap') !== -1) {
@@ -37,6 +40,7 @@ const backendUrl = 'https://mm-api.k3l.io'
 const params = new URLSearchParams(window.location.search)
 const snapshotGetParam = params.get('snapshot')
 export let snapshotId = snapshotGetParam
+export let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const getSnapshotList = async () => {
   const arr = await fetch(`${backendUrl}/api/scores`).then(r => r.json())
@@ -193,8 +197,6 @@ export const nodes = readable([], (set) => {
         e.credentialSubject.id = changeChainIdTo1(e.credentialSubject.id)
         entities[e.credentialSubject.id] = e
         entities[e.issuer] = entities[e.issuer] || true
-        updateCount(attestationReceivedCount, e.credentialSubject.id)
-        updateCount(attestationIssuedCount, e.issuer)
       })
 
       const points = Object.keys(entities).map(o => {
@@ -220,6 +222,7 @@ export const nodes = readable([], (set) => {
           label = socials[parsedAddress] || id
         }
 
+        const random = randomWithParam(id)
         return {
           id,
           label,

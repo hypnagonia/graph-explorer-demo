@@ -30,10 +30,6 @@
             {/if}
             {#if $hoveredNodeDetails.isSnap === false}
               <tr>
-                <td class="pr-4"><strong>Rank</strong></td>
-                <td>{$hoveredNodeDetails.rank}</td>
-              </tr>
-              <tr>
                 <td class="pr-4"><strong>Accuracy</strong></td>
                 <td>{($hoveredNodeDetails.accuracy * 100).toFixed(0)}%</td>
               </tr>

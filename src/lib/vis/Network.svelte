@@ -16,6 +16,7 @@
 
   import PixiApp from "./PixiApp.svelte";
   import PixiNetwork from "./PixiNetwork.svelte";
+  import { isMobile } from "../../data/dataStore";
 
   export let nodes = [];
   export let edges = [];
@@ -27,8 +28,9 @@
   let pointsWithHighlights = [];
   let theme = getContext("theme");
 
-  //const margin = { top: 30, right: 30, bottom: 50, left: 200 };
-  const margin = { top: 30, right: 30, bottom: 50, left: 200 };
+  const margin = isMobile 
+  ? { top: 30, right: 5, bottom: 50, left: 5 }
+  : { top: 30, right: 100, bottom: 50, left: 100 }
 
   const maxNodeSize = 20;
   const scaleLinkSize = scaleSqrt();
@@ -46,8 +48,8 @@
   $: nodeExtent = extent(nodes, (d) => d.score);
   $: linkExtent = extent(edges, (d) => d.weight);
 
-  $: stageWidth = width - margin.left; // - margin.right;
-  $: stageHeight = height - margin.top; // - margin.bottom;
+  $: stageWidth = width //- margin.left - margin.right;
+  $: stageHeight = height //- margin.top - margin.bottom;
 
   $: {
     if (nodes.length !== 0 && edges.length !== 0) {
@@ -67,16 +69,18 @@
         size = 10;
       } else {
         size = Math.min(
-          (d.score > 0
-            ? scaleNodeSize(d.score) 
+          d.score > 0
+            ? scaleNodeSize(d.score)
             : d.score < 0
-              ? scaleNodeSize(-d.score) 
-              : scaleNodeSize(0.5)), 10)
+              ? scaleNodeSize(-d.score)
+              : scaleNodeSize(0.5),
+          10,
+        );
       }
 
       return {
         ...d,
-        x: d.x * (stageWidth - margin.left - margin.right ) + margin.left,
+        x: d.x * (stageWidth - margin.left - margin.right) + margin.left, //+ margin.left,
         y: d.y * (stageHeight - margin.top - margin.bottom) + margin.top,
         size,
         // color: theme.colors.scale.nodes[d.curated],
@@ -134,35 +138,35 @@
       on:node-click
     />
   </PixiApp>
-  <div
-    class="bg-black text-white border border-gray-800 px-4 py-2 rounded-md shadow-md | absolute bottom-4 left-4 | text-sm"
-  >
-    <div>
-      <ul class="space-y-2">
-        {#if false}
-        <li><strong>Size</strong><br /> Score</li>
+  {#if false}
+    <div
+      class="bg-black text-white border border-gray-800 px-4 py-2 rounded-md shadow-md | absolute bottom-4 left-4 | text-sm"
+    >
+      <div>
+        <ul class="space-y-2">
+          <li><strong>Size</strong><br /> Score</li>
 
-        {/if}
-        <li>
+          <li>
+            {#if false}
+              <strong>Color</strong><br />
+            {/if}
+            {#each colorItems as d}
+              <div class="space-x-3">
+                <span
+                  ><span
+                    class="w-2 h-2 inline-block {d.class}"
+                    style="background-color: {d.color}"
+                  ></span>
+                  {d.label}</span
+                >
+              </div>
+            {/each}
+          </li>
           {#if false}
-          <strong>Color</strong><br />
+            <li><strong>Line Color</strong><br /> Target node type</li>
           {/if}
-          {#each colorItems as d}
-            <div class="space-x-3">
-              <span
-                ><span
-                  class="w-2 h-2 inline-block {d.class}"
-                  style="background-color: {d.color}"
-                ></span>
-                {d.label}</span
-              >
-            </div>
-          {/each}
-        </li>
-        {#if false}
-        <li><strong>Line Color</strong><br /> Target node type</li>
-        {/if}
-      </ul>
+        </ul>
+      </div>
     </div>
-  </div>
+  {/if}
 </div>

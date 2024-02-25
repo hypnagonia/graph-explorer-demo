@@ -34,7 +34,7 @@
 
   import { format } from "d3";
   import { orderBy } from "lodash-es";
-
+  import { toLocaleString } from "../utils/format";
   // import VirtualList from 'svelte-virtual-list-ce';
   import {
     Toggle,
@@ -61,12 +61,6 @@
     "label",
     "asc",
   );
-
-  function toLocaleString(snapshot) {
-    const date = new Date(+snapshot);
-    const localString = date.toLocaleString();
-    return localString;
-  }
 </script>
 
 <div class="p-6">
@@ -166,7 +160,7 @@
 <div class="p-6">
   <div>
     <div class="cursor-pointer font-bold">
-      Snapshots ({$snapshots.length})
+      Trust Computer Epochs ({$snapshots.length})
     </div>
     <Dropdown class="w-64 overflow-y-auto py-4 h-48">
       {#each $snapshots as s}
@@ -179,12 +173,5 @@
         >
       {/each}
     </Dropdown>
-  </div>
-
-  <div class="fixed bottom-0 right-0 m-4">
-    <!-- Your content here -->
-    <p class="bg-white p-4 rounded-lg">
-      Snapshot {toLocaleString(snapshotId)}
-    </p>
   </div>
 </div>

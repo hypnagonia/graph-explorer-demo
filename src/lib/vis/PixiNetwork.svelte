@@ -33,10 +33,10 @@
       stage = $app.stage;
       renderer = $app.renderer;
       // renderer.resize(width, height);
+      // todo 200 is magical number
       renderer.resize(width, height);
-      console.log({width, height})
-      // {width: 499, height: 738}
-      
+      console.log({ width, height });
+
       let nodesInitial = false;
       let edgesInitial = false;
 
@@ -197,11 +197,9 @@
           );
           let arrowLength = 20;
 
-          let size = edge.target.size + (edge.target.isSnap ? 10 : 10)
-          let targetX =
-            edge.target.x - (size / 2) * Math.cos(angle);
-          let targetY =
-            edge.target.y - (size / 2) * Math.sin(angle);
+          let size = edge.target.size + (edge.target.isSnap ? 10 : 10);
+          let targetX = edge.target.x - (size / 2) * Math.cos(angle);
+          let targetY = edge.target.y - (size / 2) * Math.sin(angle);
 
           drawArrowhead(
             edges_container,
@@ -271,18 +269,25 @@
         );
       }
 
-      let scale = 1 ||
+      let scale =
+        1 ||
         Math.min(
           width / nodes_container.width,
           height / nodes_container.height,
         ); // magical number
 
       stage.scale.set(scale, scale);
-  //      stage.x = ((width - nodes_container.width) * scale) / 1;
-   //   stage.y = ((height - nodes_container.height) * scale) / 1;
-      stage.x =  0;
-      stage.y =  0;
-      console.log('--', width, nodes_container.width, height, nodes_container.height)
+      //      stage.x = ((width - nodes_container.width) * scale) / 1;
+      //   stage.y = ((height - nodes_container.height) * scale) / 1;
+      stage.x = 0;
+      stage.y = 0;
+      console.log(
+        "--",
+        width,
+        nodes_container.width,
+        height,
+        nodes_container.height,
+      );
 
       $app.render();
     }

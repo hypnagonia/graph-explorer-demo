@@ -113,10 +113,6 @@
           {/if}
           {#if $selectedNodeDetails.isSnap === false}
             <tr>
-              <td class="pr-4">Rank</td>
-              <td>{$selectedNodeDetails.rank}</td>
-            </tr>
-            <tr>
               <td class="pr-4">Score</td>
               <td>{scoreFormat($selectedNodeDetails.score)}</td>
             </tr>
