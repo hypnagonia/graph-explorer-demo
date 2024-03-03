@@ -36,7 +36,7 @@ export const peerLabels = {
   '0': '-',
   '1': 'Highly Trusted',
 }
-const backendUrl = 'https://k3l-mm-spd-dev.s3.us-west-2.amazonaws.com'
+const backendUrl = 'https://mm-spd-dev.k3l.xyz'
 const params = new URLSearchParams(window.location.search)
 export let snapshotId = params.get('snapshot')
 const modes = [
