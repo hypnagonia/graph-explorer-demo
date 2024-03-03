@@ -87,7 +87,17 @@
             }) // No display tooltip
             .on("click", () => {
               dispatch("node-click", node.id);
-            }); // Handle click/dbclick event
+            })
+            .on("touchstart", () => {
+              dispatch("node-click", node.id);
+            })
+            .on("touchstart", () => {
+              dispatch("node-mouseover", node.id);
+            })
+            .on("touchend", () => {
+              // dispatch("node-mouseout", node.id);
+            });
+          // Handle click/dbclick event
           node_gfx.id = node.id;
           nodes_container.addChild(node_gfx);
 
@@ -195,9 +205,9 @@
             edge.target.y - edge.source.y,
             edge.target.x - edge.source.x,
           );
-          let arrowLength = 10;
+          let arrowLength = 6;
 
-          let size = edge.target.size + (edge.target.isSnap ? 5 : 5);
+          let size = edge.target.size + (edge.target.isSnap ? 2 : 5);
           let targetX = edge.target.x - (size / 2) * Math.cos(angle);
           let targetY = edge.target.y - (size / 2) * Math.sin(angle);
 

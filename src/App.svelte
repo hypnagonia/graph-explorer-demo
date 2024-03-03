@@ -32,7 +32,7 @@
   import { Toggle } from "flowbite-svelte";
   import { AdjustmentsHorizontalOutline } from "flowbite-svelte-icons";
   import { CloseCircleSolid } from "flowbite-svelte-icons";
-  import { isMobile, snapshotId } from "./data/dataStore";
+  import { isMobile, snapshotId, snapshotsAvailable } from "./data/dataStore";
   import { toLocaleString } from "./utils/format";
   import { isMenuVisible } from "./state/uiState.js";
 
@@ -79,26 +79,32 @@
   <main class="min-h-screen flex flex-col h-screen">
     <div class="header | p-4 bg-gray-800">
       <h1 class=" text-white font-serif flex flex-row" style="">
-        <div style="margin-top:-1px;">
+        <div class="flex flex-row">
+          <div>
           <a href="https://karma3labs.com/" target="_blank">
             <Logo />
+            
           </a>
+        </div>
+        <div style="margin-top:1px;" class="text-amber-300 items-center">
+          &nbsp;Snaps Reputation Graph
+        </div>
         </div>
         <div></div>
 
         {#if isMobile}
           <div style="margin-left: auto;">
             {#if $isMenuVisible}
-            <CloseCircleSolid
-              class="cursor-pointer"
-              on:click={() => ($isMenuVisible = !$isMenuVisible)}
-            />
+              <CloseCircleSolid
+                class="cursor-pointer text-amber-300"
+                on:click={() => ($isMenuVisible = !$isMenuVisible)}
+              />
             {/if}
             {#if !$isMenuVisible}
-            <AdjustmentsHorizontalOutline
-              class="cursor-pointer"
-              on:click={() => ($isMenuVisible = !$isMenuVisible)}
-            />
+              <AdjustmentsHorizontalOutline
+                class="cursor-pointer text-amber-300"
+                on:click={() => ($isMenuVisible = !$isMenuVisible)}
+              />
             {/if}
           </div>
         {/if}
@@ -114,6 +120,11 @@
               nodes={$nodesDetails}
               edges={$edgesDetails}
               on:node-mouseover={(d) => {
+                if (isMobile && $hoveredNodeId && $hoveredNodeId === d.detail) {
+                  $hoveredNodeId = "";
+                  return;
+                }
+
                 $hoveredNodeId = d.detail;
               }}
               on:node-mouseout={(d) => {
@@ -147,12 +158,14 @@
       {/if}
     </div>
 
-    <div class="fixed bottom-0 right-0 m-4">
-      <!-- Your content here -->
-      <p class="bg-white p-2 rounded-lg" style="opacity: 0.5;">
-        Epoch {toLocaleString(snapshotId)}
-      </p>
-    </div>
+    {#if !isMobile}
+      <div class="fixed bottom-0 right-0 m-4">
+        <!-- Your content here -->
+        <p class="bg-white p-2 rounded-lg" style="opacity: 0.5;">
+          Epoch {toLocaleString($snapshotsAvailable.find(a => a.id === snapshotId).effectiveDateMs)}
+        </p>
+      </div>
+    {/if}
   </main>
   <TooltipView />
 {:else}
@@ -168,5 +181,14 @@
     position: absolute;
     width: 100%;
     height: 100%;
+  }
+
+  body {
+    -webkit-touch-callout: none; /* Disable callout, image save panel on long-touch */
+    -webkit-user-select: none; /* Disable selection */
+    -khtml-user-select: none; /* Disable selection */
+    -moz-user-select: none; /* Disable selection */
+    -ms-user-select: none; /* Disable selection */
+    user-select: none; /* Disable selection */
   }
 </style>

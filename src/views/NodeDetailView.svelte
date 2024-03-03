@@ -3,6 +3,8 @@
   import { format } from "d3";
   import { slice, map } from "lodash-es";
   import { selectedNodeDetails, nodesByLabel } from "../data/dataApi";
+  import { mode } from "../data/dataStore";
+
   import { selectedNodeId } from "../state/uiState";
   import { Toggle } from "flowbite-svelte";
 
@@ -56,6 +58,8 @@
         });
     }
   }
+
+  $: wordBreak = $selectedNodeDetails.label.indexOf('did') !==0 ? 'normal' : 'break-all'
   const scoreFormat = format(".8f");
 </script>
 
@@ -65,7 +69,7 @@
       <div class="px-6 py-4 flex flex-row items-center justify-between">
         <div
           class="font-bold text-sm"
-          style="word-break:break-all;max-width:300px;font-size:20px;"
+          style={`word-break:${wordBreak};max-width:240px;font-size:20px;`}
         >
           {$selectedNodeDetails.isSnap ? $selectedNodeDetails.label : $selectedNodeDetails.label}
         </div>
@@ -75,7 +79,7 @@
           size="xs"
           on:click={() => {
             $selectedNodeId = "";
-          }}>Close</Button
+          }}>&#8592; Back</Button
         >
       </div>
 
@@ -116,11 +120,12 @@
               <td class="pr-4">Score</td>
               <td>{scoreFormat($selectedNodeDetails.score)}</td>
             </tr>
+            {#if mode.id !== 'SoftwareDevelopment'}
             <tr>
               <td class="pr-4">Accuracy</td>
               <td>{($selectedNodeDetails.accuracy * 100).toFixed(0)}%</td>
             </tr>
-
+            {/if}
             <tr>
               <td class="pr-4">Assertions Sent</td>
               <td>{$selectedNodeDetails.attestationIssuedCount}</td>

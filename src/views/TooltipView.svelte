@@ -2,14 +2,14 @@
   import Tooltip from "../lib/mouse/Tooltip.svelte";
   import { format } from "d3";
 
-  import { hoveredNodeId } from "../state/uiState";
+  import { hoveredNodeId, isMenuVisible } from "../state/uiState";
   import { hoveredNodeDetails } from "../data/dataApi";
-
+  import { isMobile, snapshotId, mode } from "../data/dataStore";
   const scoreFormat = format(".8f");
 </script>
 
-<div class="tooltip-view">
-  {#if $hoveredNodeId !== "" && $hoveredNodeDetails}
+<div class="tooltip-view" style={`opacity:${isMobile ? '0.7' : '1'};`}>
+  {#if $hoveredNodeId !== "" && $hoveredNodeDetails && !$isMenuVisible}
     <Tooltip>
       <div class="text-sm">
         <div class="py-2 px-4 whitespace-nowrap">
@@ -28,7 +28,7 @@
                 <td>{$hoveredNodeDetails.confidence}</td>
               </tr>
             {/if}
-            {#if $hoveredNodeDetails.isSnap === false}
+            {#if $hoveredNodeDetails.isSnap === false && mode.id !== 'SoftwareDevelopment'}
               <tr>
                 <td class="pr-4"><strong>Accuracy</strong></td>
                 <td>{($hoveredNodeDetails.accuracy * 100).toFixed(0)}%</td>

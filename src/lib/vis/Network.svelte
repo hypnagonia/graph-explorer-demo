@@ -28,9 +28,9 @@
   let pointsWithHighlights = [];
   let theme = getContext("theme");
 
-  const margin = isMobile 
-  ? { top: 30, right: 5, bottom: 50, left: 5 }
-  : { top: 30, right: 100, bottom: 50, left: 100 }
+  const margin = isMobile
+    ? { top: 5, right: 5, bottom: 50, left: 5 }
+    : { top: 30, right: 100, bottom: 50, left: 100 };
 
   const maxNodeSize = 20;
   const scaleLinkSize = scaleSqrt();
@@ -48,8 +48,8 @@
   $: nodeExtent = extent(nodes, (d) => d.score);
   $: linkExtent = extent(edges, (d) => d.weight);
 
-  $: stageWidth = width / 2//- margin.left - margin.right;
-  $: stageHeight = height / 2//- margin.top - margin.bottom;
+  $: stageWidth = width / 2; //- margin.left - margin.right;
+  $: stageHeight = height / 2; //- margin.top - margin.bottom;
 
   $: {
     if (nodes.length !== 0 && edges.length !== 0) {
@@ -78,21 +78,27 @@
         );
       }
 
+      // isIncludedInScores
+
+      let color;
+
+      if (!d.isIncludedInScores && false) {
+        color = "white";
+      } else if (d.score === '-') {
+        color = "grey";
+      } else if (d.isSnap) {
+        color = d.score > 0 ? "#55FFFF" : "#00AAAA";
+      } else {
+        color = d.score > 0 ? "#FFFF55" : "#8B8000" 
+      }
+
       return {
         ...d,
         x: d.x * (stageWidth - margin.left - margin.right) + margin.left, //+ margin.left,
         y: d.y * (stageHeight - margin.top - margin.bottom) + margin.top,
         size,
         // color: theme.colors.scale.nodes[d.curated],
-        color: d.isSnap
-          ? d.score > 0
-            ? "#55FFFF"
-            : "#00AAAA"
-          : d.score > 0
-            ? "#FFFF55"
-            : d.score < 0
-              ? "#AA00AA"
-              : "grey",
+        color,
         borderColor: d.seed ? "#F3FF7A" : "#000",
         seed: d.seed,
       };

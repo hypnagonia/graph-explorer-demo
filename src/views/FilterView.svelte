@@ -20,6 +20,7 @@
     showAuditorNodes,
     snapshotTimestamps,
     snapLabelFilters,
+    isMenuVisible,
   } from "../state/uiState";
   import {
     nodesList,
@@ -30,7 +31,7 @@
     nodesDegreeOutDomain,
     snapshots,
   } from "../data/dataApi.js";
-  import { snapshotId } from "../data/dataStore";
+  import { snapshotId, isMobile, mode } from "../data/dataStore";
 
   import { format } from "d3";
   import { orderBy } from "lodash-es";
@@ -63,7 +64,7 @@
   );
 </script>
 
-<div class="p-6">
+<div class="p-5">
   <div class="space-y-2">
     <Search
       placeholder="Search a Snap or User"
@@ -82,6 +83,7 @@
             on:click={() => {
               $selectedNodeId = item.id;
               searchProfileLabel = "";
+              $isMenuVisible = false;
             }}>{item.label}</DropdownItem
           >
         {/each}
@@ -90,23 +92,51 @@
   </div>
 </div>
 
-<div class="p-6">
-  <h2 class="text-md font-bold | mb-4">Snaps</h2>
-  <div class="space-y-2">
-    <Toggle bind:checked={$showSnapNodes}>All</Toggle>
-    {#each $snapLabelFilters as s}
-      <Toggle bind:checked={s.value}>{s.label}</Toggle>
-    {/each}
+<div class="p-5">
+  <h2 class="text-md font-bold | mb-4">Users</h2>
+  <div class="cursor-pointer font-bold">
+   
+      <Toggle class="cursor-pointer" checked={true} on:click={() => {
+        let s;
+        if (mode.id === "SoftwareDevelopment") {
+          s = "SoftwareSecurity";
+        } else {
+          s = "SoftwareDevelopment";
+        }
+        window.location.href =
+          window.location.href.split("?")[0] + "?mode=" + s;
+      }}>
+    {mode.id === "SoftwareDevelopment"
+    ? "Software Security"
+    : "Software Development"} &#8599;  
+    </Toggle>
+      
   </div>
 </div>
 
-<div class="p-6">
-  <h2 class="text-md font-bold | mb-4">Peers</h2>
-  <div class="space-y-2">
-    <Toggle bind:checked={$showAuditorNodes}>Auditors</Toggle>
-    <Toggle bind:checked={$showDeveloperNodes}>Developers</Toggle>
+{#if mode.id !== "SoftwareDevelopment"}
+  <div class="p-5">
+    <h2 class="text-md font-bold | mb-4">Snaps</h2>
+    <div class="space-y-2">
+      {#if false}
+        <Toggle bind:checked={$showSnapNodes}>All</Toggle>
+      {/if}
+      {#each $snapLabelFilters as s}
+        <Toggle bind:checked={s.value}>{s.label}</Toggle>
+      {/each}
+    </div>
   </div>
-</div>
+{/if}
+
+{#if false}
+  <div class="p-5">
+    <h2 class="text-md font-bold | mb-4">Peers</h2>
+    <div class="space-y-2">
+      <Toggle bind:checked={$showAuditorNodes}>Auditors</Toggle>
+      <Toggle bind:checked={$showDeveloperNodes}>Developers</Toggle>
+    </div>
+  </div>
+{/if}
 
 {#if isReady && false}
   <div class="p-6-a">
@@ -157,7 +187,7 @@
   </div>
 {/if}
 
-<div class="p-6">
+<div class="p-5">
   <div>
     <div class="cursor-pointer font-bold">
       Trust Computer Epochs ({$snapshots.length})
@@ -165,18 +195,25 @@
     <Dropdown class="w-64 overflow-y-auto py-4 h-48">
       {#each $snapshots as s}
         <DropdownItem
-          class={s === snapshotId ? "bg-blue-500" : ""}
+          class={s.id === snapshotId ? "bg-amber-300" : ""}
           on:click={() => {
             window.location.href =
-              window.location.href.split("?")[0] + "?snapshot=" + s;
-          }}>{toLocaleString(s)}</DropdownItem
+              window.location.href.split("?")[0] +
+              "?snapshot=" +
+              s.id +
+              "&mode=" +
+              mode.id;
+          }}>{toLocaleString(s.effectiveDateMs)}</DropdownItem
         >
       {/each}
     </Dropdown>
+
     <div class="cursor-pointer font-bold">
-      <br/>
-      <a href="https://dune.com/karma3-labs/metamask-snaps-attestations-and-trust-scores" target="_blank">Dune Dashboard &#8599;</a>
+      <br />
+      <a
+        href="https://dune.com/karma3-labs/metamask-snaps-attestations-and-trust-scores"
+        target="_blank">Dune Dashboard &#8599;</a
+      >
     </div>
-   
   </div>
 </div>

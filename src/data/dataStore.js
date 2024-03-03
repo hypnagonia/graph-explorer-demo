@@ -38,14 +38,46 @@ export const peerLabels = {
 }
 const backendUrl = 'https://mm-api.k3l.io'
 const params = new URLSearchParams(window.location.search)
-const snapshotGetParam = params.get('snapshot')
-export let snapshotId = snapshotGetParam
+export let snapshotId = params.get('snapshot')
+const modes = [
+  {
+    text: 'Software security',
+    id: 'SoftwareSecurity'
+  }, {
+    text: 'Software development',
+    id: 'SoftwareDevelopment'
+  }
+]
+const modeParam = params.get('mode')
+export let mode
+
+if (modes.map(a => a.id).includes(modeParam)) {
+  mode = modes.find(a => a.id === modeParam)
+} else {
+  mode = modes[0]
+}
+
 export let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const getSnapshotList = async () => {
-  const arr = await fetch(`${backendUrl}/api/scores`).then(r => r.json())
-  arr.shift()
-  return arr.filter((a, i) => {
+  const res = await fetch(`${backendUrl}/api/scores/list`).then(r => r.json())
+
+  const list = Object.keys(res)
+    .map(key => {
+      res[key].id = key
+      return res[key]
+    })
+    .filter((a, i) => {
+      const isSecurity = a.scope === mode.id
+      return isSecurity
+    })
+    .map(a => {
+      const ms = new Date(a.effectiveDate).getTime()
+      a.effectiveDateMs = ms
+      return a
+    })
+    .sort((a, b) => b.effectiveDateMs - a.effectiveDateMs)
+  /*.filter((a, i) => {
     if (!arr[i - 1]) {
       return true
     }
@@ -53,9 +85,10 @@ const getSnapshotList = async () => {
     if (diff === 1) {
       return false
     }
-
+ 
     return true
-  })
+  })*/
+  return list
 }
 let getSnapshotListPromise = getSnapshotList()
 
@@ -91,13 +124,14 @@ const getSocialData = async () => {
 }
 
 const getInputData = () => {
-  return fetch(`${backendUrl}/files/metamask-input.csv`)
+  return fetch(`${backendUrl}/api/scores/indexer-scores`)
+  // return fetch(`${backendUrl}/files/metamask-input.csv`)
 }
 
 const getScores = async () => {
+  const list = await (getSnapshotListPromise || getSnapshotList())
   if (!snapshotId) {
-    const list = await (getSnapshotListPromise || getSnapshotList())
-    snapshotId = list[list.length - 1]
+    snapshotId = list[0].id
   }
 
   return Promise.all([
@@ -115,25 +149,59 @@ const getInputCSV = async () => {
 
     if (!snapshotId) {
       const list = await (getSnapshotListPromise || getSnapshotList())
-      snapshotId = list[list.length - 1]
+      snapshotId = list[0].id
     }
 
-    return Papa.parse(csvData, {
-      header: true,
-      delimiter: ";",
+    let count = 0
+
+    const csvParsedObject = Papa.parse(csvData, {
+      header: false,
+      //delimiter: ";",
+      delimiter: ",",
     }).data
-      .filter(o => {
-        const date = new Date(o.timestamp)
-        const timestamp = date.getTime()
-        return timestamp <= +snapshotId
+      .map(a => {
+        return {
+          schema_value: a[3],
+          timestamp: +a[1],
+          id: +a[0]
+        }
       })
       .filter(o => !!o.id)
       .map(o => {
         const schema_value = JSON.parse(o.schema_value)
         schema_value.issuer = changeChainIdTo1(schema_value.issuer)
         schema_value.credentialSubject.id = changeChainIdTo1(schema_value.credentialSubject.id)
-        return schema_value
+
+        //
+        const date = new Date(o.timestamp)
+        const timestamp = date.getTime()
+        schema_value.isIncludedInScores = timestamp <= +snapshotId
+
+        return { id: o.id, schema_value }
       })
+      .filter(o => {
+        if (o.schema_value.credentialSubject.trustworthiness) {
+          const scopes = o.schema_value.credentialSubject.trustworthiness.map(t => t.scope)
+          return scopes.includes(mode.text)
+        }
+
+        return true
+      })
+      // no snaps for development mode
+      .filter(o => {
+        if (o.schema_value.credentialSubject.id.indexOf('snap') !== -1 && mode.id === 'SoftwareDevelopment') {
+          return false
+        }
+
+        return true
+      })
+      // make sure assertions are unique
+      .reduce((o, a) => {
+        o['' + a.id] = a.schema_value
+        return o
+      }, {})
+
+    return Object.values(csvParsedObject)
   }
 
   return run()
@@ -171,6 +239,7 @@ export const nodes = readable([], (set) => {
       const snapMetaData = await getSnapMetaDataPromise
 
       const entities = {}
+      const issuers = {}
       const attestationIssuedCount = {}
       const attestationReceivedCount = {}
 
@@ -184,6 +253,7 @@ export const nodes = readable([], (set) => {
 
       inputs.forEach(e => {
         e.issuer = changeChainIdTo1(e.issuer)
+        issuers[e.issuer] = true
         e.credentialSubject.id = changeChainIdTo1(e.credentialSubject.id)
         entities[e.credentialSubject.id] = e
 
@@ -193,9 +263,10 @@ export const nodes = readable([], (set) => {
       })
 
       scores.forEach(e => {
+        issuers[e.issuer] = true
         e.issuer = changeChainIdTo1(e.issuer)
         e.credentialSubject.id = changeChainIdTo1(e.credentialSubject.id)
-        entities[e.credentialSubject.id] = e
+        entities[e.credentialSubject.id] = entities[e.credentialSubject.id] ? { ...entities[e.credentialSubject.id], ...e } : e
         entities[e.issuer] = entities[e.issuer] || true
       })
 
@@ -205,14 +276,15 @@ export const nodes = readable([], (set) => {
         let id = attestation ? attestation.credentialSubject.id : o;
         let score = attestation ? (attestation.credentialSubject.trustScore.value) : 0
         let rank = attestation ? (attestation.credentialSubject.trustScore.rank || '-') : '-'
-        
+
         let accuracy = attestation ? (attestation.credentialSubject.trustScore.accuracy || 1) : 1
         let isSnap = id.indexOf('snap') !== -1
-        
+
         let label_badge_id = '' + (attestation ? (attestation.credentialSubject.trustScore.result || '0') : '0')
         let label_badge = isSnap ? snapLabels[label_badge_id] : peerLabels[label_badge_id]
         let confidence = (attestation ? (attestation.credentialSubject.trustScore.confidence || '-') : '-')
-
+        const isIncludedInScores = attestation ? (attestation.isIncludedInScores || isSnap) : true
+        // console.log('is',isIncludedInScores)
         let label
         if (isSnap) {
           let parsedChecksum = id.split('//').at(-1)
@@ -241,9 +313,19 @@ export const nodes = readable([], (set) => {
           interacted_days: 500,
           label_badge,
           attestationIssuedCount: attestationIssuedCount[id] || 0,
-          attestationReceivedCount: attestationReceivedCount[id] || 0
+          attestationReceivedCount: attestationReceivedCount[id] || 0,
+          isIncludedInScores
         }
       })
+
+      console.log('total snaps', points.filter(a => a.isSnap).length)
+      console.log('total users', points.filter(a => !a.isSnap).length)
+      console.log('unique issuers', Object.keys(issuers).length)
+
+      console.log('assertions for snaps', inputs.filter(e => e.credentialSubject.id.indexOf('snap') !== -1).length)
+      console.log('assertions for peers', inputs.filter(e => e.credentialSubject.id.indexOf('snap') === -1).length)
+
+
 
       return points
     })
@@ -254,7 +336,7 @@ export const nodes = readable([], (set) => {
 
 export const snapshotsAvailable = readable([], (set) => {
   (getSnapshotListPromise || getSnapshotList()).then(r => {
-    set(r.reverse())
+    set(r)
   })
 })
 
@@ -274,6 +356,16 @@ export const edges = readable([], (set) => {
           : 0
 
         let currentStatus = e.credentialSubject.currentStatus ? (e.credentialSubject.currentStatus === 'Endorsed' ? 1 : -1) : 0
+
+        if (mode.id === 'SoftwareDevelopment' && currentStatus === 0) {
+          currentStatus = e.credentialSubject.trustworthiness.find(a => a.scope === mode.text).level
+        }
+
+        if (currentStatus === 0) {
+          const honesty = e.credentialSubject.trustworthiness.find(a => a.scope === "Honesty")
+          currentStatus = honesty ? honesty.level : currentStatus
+        }
+
         // todo peers
         let weight = currentStatus // trustworthiness > 0 ? 1 : trustworthiness < 0 ? -1 : 0
 
