@@ -36,7 +36,7 @@ export const peerLabels = {
   '0': '-',
   '1': 'Highly Trusted',
 }
-const backendUrl = 'https://mm-api.k3l.io'
+const backendUrl = 'https://k3l-mm-spd-dev.s3.us-west-2.amazonaws.com'
 const params = new URLSearchParams(window.location.search)
 export let snapshotId = params.get('snapshot')
 const modes = [
@@ -60,7 +60,7 @@ if (modes.map(a => a.id).includes(modeParam)) {
 export let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const getSnapshotList = async () => {
-  const res = await fetch(`${backendUrl}/api/scores/list`).then(r => r.json())
+  const res = await fetch(`${backendUrl}/api/scores/list.json`).then(r => r.json())
 
   const list = Object.keys(res)
     .map(key => {
